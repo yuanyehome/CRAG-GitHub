@@ -431,7 +431,8 @@ if __name__ == "__main__":
     participant_model = UserModel(
         nprocs=torch.cuda.device_count(),
         local_large_files_path=args.local_large_files_path,
-        custom_local_model_path=args.custom_local_model_path
+        custom_local_model_path=args.custom_local_model_path,
+        vllm_gpu_memory_utilization=0.6
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)

@@ -52,7 +52,7 @@ AICROWD_SUBMISSION_BATCH_SIZE = 4  # TUNE THIS VARIABLE depending on the number 
 
 # VLLM Parameters
 VLLM_TENSOR_PARALLEL_SIZE = 4  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
-VLLM_GPU_MEMORY_UTILIZATION = 0.85  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
+VLLM_GPU_MEMORY_UTILIZATION = 0.9  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
 
 # Sentence Transformer Parameters
 SENTENTENCE_TRANSFORMER_BATCH_SIZE = 128  # TUNE THIS VARIABLE depending on the size of your embedding model and GPU mem available
@@ -182,6 +182,7 @@ class BatchRAGModel:
         model_size="70B",
         custom_local_model_path=None,
         quantization=None,
+        vllm_gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -190,6 +191,7 @@ class BatchRAGModel:
         self.model_size = model_size
         self.custom_local_model_path = custom_local_model_path
         self.quantization = quantization
+        self.vllm_gpu_memory_utilization = vllm_gpu_memory_utilization
         if self.model_size == "70B" and quantization is None:
             self.quantization = "gptq"
         assert self.model_size in ["8B", "70B"]
@@ -226,7 +228,7 @@ class BatchRAGModel:
             self.model_name,
             tensor_parallel_size=self.nprocs,
             quantization=self.quantization,
-            gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
+            gpu_memory_utilization=self.vllm_gpu_memory_utilization,
             trust_remote_code=True,
             dtype="half",  # note: bfloat16 is not supported on nvidia-T4 GPUs
             enforce_eager=True,
