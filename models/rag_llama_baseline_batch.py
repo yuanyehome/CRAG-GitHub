@@ -250,6 +250,8 @@ class BatchRAGModel:
             sentence_model_path,
             device=torch.device("cuda:0"),
         )
+        print("After initializing models, GPU Memory info:")
+        os.system("nvidia-smi")
 
     def calculate_embeddings(self, sentences):
         """
