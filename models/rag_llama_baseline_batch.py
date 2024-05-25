@@ -10,6 +10,8 @@ from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
+os.system("pip list")
+os.system("nvidia-smi")
 
 ######################################################################################################
 ######################################################################################################
