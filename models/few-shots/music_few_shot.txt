@@ -1,0 +1,119 @@
+You are asked to answer the question based on **the references** and **your knowledge**. If you are not sure and you can't find answer in the references, please be brave to answer "I don't know". **REMEMBER**: It is much better to answer "I don't know" than to give a wrong answer. You will be punished **SEVERLY** if you give the wrong answer. The output of your answer should be in JSON format, indicating the usefulness of these references, your confidence with the answer, and the answer itself.
+Here are a few examples:
+
+### Question: can you tell me the name of the first song that lady gaga released?
+### Domain: music
+### References: 
+<DOC>'Just Dance' Just Dance, by Lady Gaga and featuring Colby O'Donis, is a part of her first studio album The Fame.</DOC>
+<DOC>'Born This Way' Born This Way was released as a single ahead of Gaga's second studio album of the same name.</DOC>
+<DOC> Dance" on YouTube "Just Dance" is the debut single by American singer Lady Gaga.</DOC>
+<DOC>"Gaga by name..."</DOC>
+<DOC>"Lady Gaga:The Fame".</DOC>
+<DOC>It also features vocals from Colby O'Donis and was released on April 8, 2008, as the lead single from Gaga's debut studio album, The Fame.</DOC>
+<DOC>"Lady GaGa: The Fame".</DOC>
+<DOC>"Lady Gaga debuts 'Free Woman,' 'Sour Candy' and more during first night of 'The Chromatica Ball'".</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}
+
+### Question: how many number one hits did the beatles have?
+### Domain: music
+### References: 
+<DOC>Contents ToggleSo, How Many Number Ones Did The Beatles Have?1.</DOC>
+<DOC>usic MusicDid The Beatles Have More No. 1 Hits Than Elvis?Elvis Presley and The Beatles both had a slew of No. 1 hits.</DOC>
+<DOC>On the Hot 100, “Love Me Do” was The Beatles’ first song on the tally, reaching the summit in May 1964; they’d go on to earn 19 more No. 1s on the list.</DOC>
+<DOC>Over their decade of existence, the Beatles saw 20 number 1 hits on the Billboard charts.</DOC>
+<DOC>Going just by the music the band made from 1963-70, The Beatles can claim 20 Billboard No. 1 hits.</DOC>
+<DOC>Their debut studio album, 1963’s ‘Please Please Me,’ peaked at No. 155 on the Billboard 200, with the band eventually securing 19 No. 1 albums on the chart; they are also the musical act with most wee</DOC>
+<DOC>Hey Jude “Hey Jude” is The Beatles' most-successful song on the Billboard charts, hanging around at No. 1 for nine weeks.</DOC>
+<DOC>4 26 Hey Jude The Beatles 09.14.68 1 9 WKS 09.28.68 19 Got To Get You Into My Life The Beatles 06.12.76 7 12 Wks 07.24.76 16 Come Together/Something The Beatles 10.18.69 1 1 WKS 11.29.69 16 I Want To </DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: can you name the songs that selena gomez put out in 2020?
+### Domain: music
+### References: 
+<DOC>May 13, 2022. vteSelena Gomez Awards and nominations Discography Live performances Songs Videography Studio albums Stars Dance Revival Rare Compilation albums For You EPs Another Cinderella Story EP R</DOC>
+<DOC>d CienteNolan Lambroza Rare 2020 [23] "Rise" Selena Gomez Antonina ArmatoTim JamesAdam SchmalholzSelena Gomez Revival 2015 [28] "Rock God" Selena Gomez & the Scene Katy PerryPrintz BoardVictoria Jane </DOC>
+<DOC>] "Dance Again" Selena Gomez Selena GomezMattias LarssonRobin FredrikssonJustin TranterCaroline Ailin Rare 2020 [23] "De Una Vez" † Selena Gomez Selena GomezAbner BoriaChristopher RamosMarco MasísElen</DOC>
+<DOC>Gomez Selena GomezJustin TranterUzoechi EmenikeJon WiennerSam Hoemaee Rare 2020 [23] "Sick of You" Selena Gomez & the Scene Matt SquireLucas Banker A Year Without Rain 2010 [34] "Single Soon" † Selena</DOC>
+<DOC>es: Songs by songwriterSelena Gomez This page was last edited on 28 February 2021, at 16:43 (UTC).</DOC>
+<DOC>Selena Gomez[d] Revival 2015 [28] "The Heart Wants What It Wants" † Selena Gomez Selena GomezAntonina ArmatoDavid JostTim James For You 2014 [27] "Hit the Lights" † Selena Gomez & the Scene Leah Haywo</DOC>
+<DOC>Hamilton When the Sun Goes Down 2011 [25] "B.E.A.T." Selena Gomez Freddy WexlerJai MarlonHeather Jeanette Miley Stars Dance 2013 [26] "Bidi Bidi Bom Bom" Selena featuring Selena Gomez Selena Quintanil</DOC>
+<DOC>owded Room (Selena Gomez song) Cut You Off (Selena Gomez song)D Dámelo To' Dance Again (Selena Gomez song) De Una Vez Do It (Selena Gomez song)F Feel Me (Selena Gomez song) Fetish (song) Fun (Selena G</DOC>
+### Answer: {"useful": true, "generation": "rare (live from the village studio), rare (alexander 23 edit), rare (deluxe album), \u7d55\u7121\u50c5\u6709, lose you to love me (demo version), selena x votes", "confidence": true}
+
+### Question: what album did maroon five release in 2010, which included the songs "moves like jagger" and "misery"?
+### Domain: music
+### References: 
+<DOC>d: August 17, 2010 "Never Gonna Leave This Bed"Released: January 24, 2011 "Moves like Jagger"Released: June 21, 2011 Hands All Over is the third studio album by American pop rock band Maroon 5, which </DOC>
+<DOC>"Album: Maroon 5, Hands All Over (A&M)".</DOC>
+<DOC>co Shellback Maroon 5 chronology Call and Response: The Remix Album(2008) Hands All Over(2010) Overexposed(2012) Singles from Hands All Over "Misery"Released: June 22, 2010 "Give a Little More"Release</DOC>
+<DOC>Maroon 5. 2010-05-10.</DOC>
+<DOC>Hands All Over continues the band's lost love theme, along with songs about infatuation and was re-released in 2011, with the hit single "Moves like Jagger", an electropop song which represents a dras</DOC>
+<DOC>The album's lead single "Misery" was a top 15 hit on the Billboard Hot 100 while the album's fourth single, "Moves Like Jagger", became the band's second single to top the Hot 100.[5] </DOC>
+<DOC>The song appeared on the soundtrack of the 2013 film Begin Again (which also stars Levine)[125] and the deluxe edition of the band's album V.[106] Maroon 5 headlined a worldwide tour titled Maroon V T</DOC>
+<DOC>On July 12, 2011, the band re-released the album to include their summer hit and the fourth single "Moves like Jagger".[7] </DOC>
+### Answer: {"useful": true, "generation": "maroon five released the album \"hands all over\" in 2010, which included the songs \"moves like jagger\" and \"misery\".", "confidence": true}
+
+### Question: on which date was mavis staples born?
+### Domain: music
+### References: 
+<DOC>If you leave without singing it, people will just keep clapping until you do.FAQ6Powered by AlexaHow old is Mavis Staples?When was Mavis Staples born?Where was Mavis Staples born?Related newsContribut</DOC>
+<DOC>Mavis Staples was born in Chicago, on July 10th, 1939.</DOC>
+<DOC>México)Use app BiographyAwardsTriviaFAQIMDbProAll topicsMavis StaplesActressMusic DepartmentAdditional CrewIMDbProStarmeterSee rankPlay trailer1:48Mavis! (2015)2 Videos9 PhotosMavis Staples was born o</DOC>
+<DOC>o reelHow much have you seen?Keep track of how much of Mavis Staples’s work you have seen.</DOC>
+<DOC>EVENTS VIDEOS Advertise Home»Featured»10 Things You Didn’t Know About Mavis Staples Featured 10 Things You Didn’t Know About Mavis StaplesBy JD NashDecember 14, 2021Updated:December 14, 2021No Comment</DOC>
+<DOC>okTwitterSearch jobsDigital ArchiveGuardian LicensingAbout UsBack to homepageView image in fullscreenMavis Staples At SummerStageAmerican Gospel and Soul singer Mavis Staples headlines the opening nig</DOC>
+<DOC>s6 Mins Read Facebook Twitter Pinterest LinkedIn Tumblr Email VKontakte WhatsApp Share Facebook Twitter LinkedIn Pinterest Email With her family band and as a solo artist, Mavis Staples‘ career has sp</DOC>
+<DOC>Mavis Staples: Nina Cried Power8.9Music VideoMavis Staples2018The Sacrifice of Victor8.1Video1995Graffiti Bridge4.4Melody Cool1990The Cosby Show7.4TV SeriesSoloist19901 episodeMavis Staples: 20th Cent</DOC>
+### Answer: {"useful": true, "generation": "1939-07-10", "confidence": true}
+
+### Question: what teams are minor league affiliates of the san franciso giants?
+### Domain: sports
+### References: 
+<DOC>s > San Francisco Giants Minor League Affiliates Welcome · Your Account Logout Ad-Free Login Create Account Baseball Register More Register Pages Players Affiliates Leagues Teams Batting Leaders Pitch</DOC>
+<DOC>San Francisco Giants Affiliates | San Francisco Giants Globe iconLogin iconRecap iconSearch iconTickets icon TicketsSingle Game TicketsMembershipsPromotions & GiveawaysSpecial Event TicketsGroup Ticke</DOC>
+<DOC>yGiants, Giants 1965 (8 Teams)TacomaSpringfieldLexington, Decatur, FresnoMagic ValleyGiants, Giants 1964 (9 Teams)TacomaSpringfield, El PasoDecatur, Fresno, LexingtonMagic ValleyGiants, Giants 1963 (9</DOC>
+<DOC>The Giants have partnered with Eugene in the past, as they served as the club’s first Minor League affiliate from 1959-1962.</DOC>
+<DOC>Grande Valley/VictoriSpringfieldBelmont, Fresno, Eugene, Salem, Pocatello, Giants, El Paso, Giants, Quincy 1960 (11 Teams)TacomaRio Grande ValleySpringfieldGiants, Artesia, Quincy, Giants, Eugene, Poc</DOC>
+<DOC>alem-KeizerGiantsGiants 2010 (7 Teams)FresnoRichmondSan JoseAugustaSalem-KeizerGiantsGiants 2009 (7 Teams)FresnoConnecticutSan JoseAugustaSalem-KeizerGiantsGiants 2008 (7 Teams)FresnoConnecticutSan Jo</DOC>
+<DOC>oFresno, DecaturMedfordSalt Lake CityGiants, Giants 1967 (8 Teams)PhoenixWaterburyFresno, DecaturMedfordSalt Lake CityGiants, Giants 1966 (8 Teams)PhoenixWaterburyDecatur, Lexington, FresnoMagic Valle</DOC>
+<DOC>All Leagues) 2023 Pitching Leaders (All Leagues) San Francisco Giants Minor League Affiliates San Francisco Giants Minor League Affiliates San Francisco Giants Minor League Affiliates Year AAA AA Adv </DOC>
+### Answer: {"useful": true, "generation": "sacramento river cats, richmond flying squirrels, eugene emeralds, san jose giants, acl giants black, acl giants orange, dsl giants black, dsl giants orange", "confidence": true}
+
+### Question: which children does arnold schwarzenegger have?
+### Domain: open
+### References: 
+<DOC>The Terminator star and former Governor of California shares four kids with ex-wife Maria Shriver: daughters Katherine, 34, and Christina, 31, and sons Patrick, 30, and Christopher, 26.</DOC>
+<DOC>Meet Arnold Schwarzenegger's Family: Ex Maria Shriver And Five Kids SearchAbout Women's HealthSubscribeMy BookmarksWomen's Health+FitnessHealthBeautyFoodStyleWeight LossSex & LoveRelationshipsLifeAwar</DOC>
+<DOC>Arnold first tied the knot with Maria Shriver in 1986 and the pair had four kids together: Katherine Schwarzenegger, Christina Schwarzenegger, Patrick Schwarzenegger and Christopher Schwarzenegger.</DOC>
+<DOC>Here's everything to know about Arnold Schwarzenegger's five children.</DOC>
+<DOC>Patrick Arnold Shriver Schwarzenegger, 30 Jon Kopaloff/Getty Patrick Schwarzenegger was born on Sept. 18, 1993, in Los Angeles, and is the third child between Schwarzenegger and Shriver.</DOC>
+<DOC>Meet Kevin James' 4 Children With Wife Steffiana Superstar Arnold Schwarzenegger hasn’t been alone throughout all of his Hollywood success as his five wonderful children have been along for the ride.</DOC>
+<DOC>Scroll down to see a comprehensive guide to the actor’s family! [podcast_block] Credit: Willy Sanjuan/Invision/AP/Shutterstock Arnold Schwarzenegger The Austria native started bodybuilding as a teenag</DOC>
+<DOC>Richard Shotwell/Variety/Shutterstock Arnold Schwarzenegger Is the Proud Dad of 5 Adult Kids!</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}
+
+### Question: on a worldwide scale, what did abscond earn in box office sales?
+### Domain: movie
+### References: 
+<DOC>d films at the global box office.</DOC>
+<DOC>John Wick 4 has grossed $160 million domestically, and nearly $190 million from overseas territories, for a global haul of exactly $350 million.</DOC>
+<DOC>After 10 days in play, the film has grossed a terrific $245 million at the worldwide box office, of which $122 million comes from over 3,800 domestic theaters and $123 million from 75 overseas territo</DOC>
+<DOC>John Wick: Chapter 2 grossed $174 million globally against a budget of $40 million, and John Wick 3 finished with $327 million worldwide against a budget of $75 million.</DOC>
+<DOC>After nearly a month in theaters, John Wick: Chapter 4 has passed the $350 million mark at the global box office, extending its lead over John Wick: Chapter 3 — Parabellum as the highest-grossing movi</DOC>
+<DOC>John Wick: Chapter 4 opened in 71 international markets, and there are more on the way, as the film is playing in 75 total markets this weekend.</DOC>
+<DOC>For context, the film grossed a healthy $8 million in its fourth weekend of release, finishing third behind holdover hit The Super Mario Bros. Movie and newcomer The Pope's Exorcist.</DOC>
+<DOC>'John Wick: Chapter 4' Global Box Office Passes $402 Million Collider Newsletter Log in Trending 2024 Movie Releases Screenings What to Watch Originals Best Shows to Binge Watch Oscar Predictions Movi</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}
+
+### Question: what was the most recent date that lgi paid dividends to its investors?
+### Domain: finance
+### References: 
+<DOC>The payment date is the day when dividend payments are made.</DOC>
+<DOC>"When are IBM dividends typically paid?"</DOC>
+<DOC>eclared dividend.The payment date is the day the company pays the declared dividend to shareholders who own the stock before the ex-date.</DOC>
+<DOC>A dividend is a payment that a company chooses to make to shareholders when the company has a profit.</DOC>
+<DOC>The ex-dividend date: The date (aka ex-date) before which an investor must have purchased the stock to receive the upcoming dividend.</DOC>
+<DOC>The record date is when the company determines the shareholders entitled to a dividend.</DOC>
+<DOC>The payment date: This is the day dividend payments are issued to shareholders and is usually about one month after the record date.</DOC>
+<DOC>The record date: The date that determines all shareholders of record who are entitled to the dividend payment.</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}

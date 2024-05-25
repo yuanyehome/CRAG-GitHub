@@ -1,0 +1,119 @@
+You are asked to answer the question based on **the references** and **your knowledge**. If you are not sure and you can't find answer in the references, please be brave to answer "I don't know". **REMEMBER**: It is much better to answer "I don't know" than to give a wrong answer. You will be punished **SEVERLY** if you give the wrong answer. The output of your answer should be in JSON format, indicating the usefulness of these references, your confidence with the answer, and the answer itself.
+Here are a few examples:
+
+### Question: what was the total revenue of the top earning company worldwide, target?
+### Domain: finance
+### References: 
+<DOC>May 2023, by market capLeading insurance companies globally 2022, by revenueGross premiums of the insurance industry worldwide 2000-2020The most important statisticsTotal revenue of Berkshire Hathaway</DOC>
+<DOC>oogle, and Microsoft: revenue comparison 2008-2023Workforce of leading global online companies 2014-2023Revenue growth of leading tech companies 2018-2023Ranking of the 50 most profitable companies wo</DOC>
+<DOC>Available: https://www.statista.com/statistics/263265/top-companies-in-the-world-by-revenue/HomeAbout StatistaCareerContactHelp & FAQReport BugPrivacyCookie settingsImprintMenu Prices & Access Popular</DOC>
+<DOC>Highest revenue companies 2023 | StatistaSkip to main contentStatista LogoStatista Logostatista.comstatista.esstatista.destatista.frPrices & Access Business Solutions Academia and Government Statistic</DOC>
+<DOC>company in the world, with profits of over 247 billion U.S. dollars.</DOC>
+<DOC>Largest corporations based on revenue - additional information The concept of revenue itself might slightly differ depending on country or even from one company to another.</DOC>
+<DOC>Read more Top companies in the world by revenue 2023 Published by Einar H. Dyvik, Feb 13, 2024 With nearly 640 billion U.S. dollars in revenue, Walmart topped the ranking of the hundred largest compan</DOC>
+<DOC>Statista, Statista Inc., 9 Jan 2024, https://www.statista.com/statistics/263265/top-companies-in-the-world-by-revenue/CompaniesMarketCap.com, The 100 largest companies in the world ranked by revenue i</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: how many patents does microsoft hold globally?
+### Domain: finance
+### References: 
+<DOC>Microsoft2017 patent grants: 2,4412016 patent grants: 2,410Country: United StatesProducts: Software, operating systems, mobile phones8.</DOC>
+<DOC>Learn about our patent portfolio Copyrights Microsoft products and services—including images, text, and software downloads (the "content")—are owned either by Microsoft Corporation or by third parties</DOC>
+<DOC>icensing Microsoft intellectual property About technology licensing Tech licensing programs Microsoft patents Azure IP Advantage Copyrights & trademarks Copyrights & trademarks About copyright law Use</DOC>
+<DOC>censing Microsoft intellectual property About technology licensing Tech licensing programs Microsoft patents Azure IP Advantage Copyrights & trademarks Copyrights & trademarks About copyright law Use </DOC>
+<DOC>As a result, Microsoft relies on, and participates in, multiple modes of intellectual property and open innovation systems, including patents, copyrights, trademarks, trade secrets, open data, open so</DOC>
+<DOC> of Microsoft copyrighted content Microsoft Trademark and Brand Guidelines Report copyright & trademark infringement Open innovation Open innovation Open source Open data Licensing terms Licensing ter</DOC>
+<DOC>of Microsoft as a company.</DOC>
+<DOC>Patents Microsoft is committed to responsible intellectual property management, including the creation of a healthy patent ecosystem around the world that promotes and encourages innovation.</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": false}
+
+### Question: which stock had higher pretax income in the 4th quarter of 2023? apple or microsoft
+### Domain: finance
+### References: 
+<DOC>Microsoft stands out for its balanced business model and the more predictable growth pattern ahead.Figure 1: Apple vs. Microsoft: Which Tech Stock To Own In 2023?Credits: Apple Explained(Read more fro</DOC>
+<DOC>Author:Daniel MartinsPublish date:Jan 11, 2023 5:51 AM ESTWhich of the two is a better buy for the new year: Apple stock (AAPL) or Microsoft stock (MSFT) ?Fundamentally, both might share more similari</DOC>
+<DOC>anding Apple annual/quarterly pre-tax income history and growth rate from 2010 to 2023.</DOC>
+<DOC>4 $53,483 2013 $50,155 2012 $55,763 2011 $34,205 2010 $18,540 2009 $12,066 Apple Quarterly Pre-Tax Income(Millions of US $) 2023-12-31 $40,323 2023-09-30 $26,998 2023-06-30 $22,733 2023-03-31 $28,382 </DOC>
+<DOC>sts and portfolio managers consulted by Reuters last week said they expect Microsoft to outpace Apple.Share prices and valuations could shift this week as Microsoft reports its quarterly results on Tu</DOC>
+<DOC>As of Friday, the Redmond, Washington software maker's market capitalization was a few billion dollars above Apple's.Asked which would be more valuable five years from now, all 13 investments strategi</DOC>
+<DOC>Compare AAPL With Other Stocks Apple Annual Pre-Tax Income(Millions of US $) 2023 $113,736 2022 $119,103 2021 $109,207 2020 $67,091 2019 $65,737 2018 $72,903 2017 $64,089 2016 $61,372 2015 $72,515 201</DOC>
+<DOC>Apple’s comparable figure is less impressive, at only 6%.Looking further out, data compiled by YCharts suggests that Microsoft’s EPS should increase by 14% per year through the next five years.</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: what was the total value of all mergers and acquisitions (m&a) in the healthcare sector in 2021?
+### Domain: finance
+### References: 
+<DOC>Statista, Statista Inc., 12 Mar 2021, https://www.statista.com/statistics/1103515/total-value-of-mergers-and-acquisitions-worldwide-by-industry/Statista estimates, Value of mergers and acquisitions (M</DOC>
+<DOC>Value of M&A deals worldwide by industry 2020 | StatistaSkip to main contentStatista LogoStatista Logostatista.comstatista.esstatista.destatista.frPrices & Access Business Solutions Academia and Gover</DOC>
+<DOC>Accessed March 13, 2024. https://www.statista.com/statistics/1103515/total-value-of-mergers-and-acquisitions-worldwide-by-industry/Statista estimates. (2021).</DOC>
+<DOC>"Value of mergers and acquisitions (M&A) deals worldwide from 2018 to 2020, by select industry (in billion U.S. dollars)."</DOC>
+<DOC>A deal count in Spain 2022Financial advisors ranked by M&A transactions in the UK 2022, by deal valueThe most important statisticsBiggest M&A inbound deals in the U.S. 2022Global number of merger and </DOC>
+<DOC>2023Value of global M&A deals 2022, by industryThe most important statisticsLeading financial advisors to M&A deals worldwide 2023, by deal valueLeading financial advisors to M&As worldwide 2022, by d</DOC>
+<DOC>atistic Value of M&A deals in Asia Pacific 2019, by industry Premium Statistic European M&A: corporate strategy plans 2013-2023 Basic Statistic M&A sector share in total acquisition transaction value </DOC>
+<DOC>Statista, Statista Inc., 1 May 2023, https://www.statista.com/statistics/267369/volume-of-mergers-and-acquisitions-worldwide/Institute for Mergers, Acquisitions and Alliances (IMAA), Value of mergers </DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": false}
+
+### Question: could you provide me with the price-to-earnings ratio of gps?
+### Domain: finance
+### References: 
+<DOC> GPS for the past years GPS's current P/E ratio is above the 3, 5 and 10-year historical averages. 3-year avg 42.51 5-year avg 30.98 10-year avg 19.48 15-year avg 17.07 GPS PE vs peers What is GPS's P</DOC>
+<DOC> N/A 2021 N/A N/A 2020 18.72 95.41% 2019 9.58 -35.53% 2018 14.86 11.23% 2017 13.36 21.01% 2016 11.04 -22.25% 2015 14.2 3.65% 2014 13.7 -2.35% GPS average PE ratio chart What is the average PE ratio of</DOC>
+<DOC>Price Earnings Ratio is used as a good starting point.</DOC>
+<DOC>GPS PE ratio history How has GPS's PE ratio performed in the past The PE ratio of Gap has averaged 19.48 over the last ten years.</DOC>
+<DOC>GPS's PE ratio is high because its earnings per share (EPS) is low relative to its stock price.</DOC>
+<DOC>Home Glossary Stocks Dividends Contact Home Glossary Stocks Dividends Contact Back to GPS overview GPS Gap PE ratio, current and historical analysis Stocks Consumer Cyclical NYSE: GPS PE Ratio As of F</DOC>
+<DOC>As an average over the last 3 years, GPS stock has a PE ratio of 42.51.</DOC>
+<DOC>Gap PE Ratio Gap Inc (GPS) 19.37 -0.33 (-1.68%) USD | NYSE | Feb 28, 11:26 Quote Performance Key Stats Financials Estimates News Events Y-Rating Valuation Multichart Fundamental Chart Scatter Plot Tec</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": false}
+
+### Question: what was the goal total for cádiz in their last appearance in esp-la liga?
+### Domain: sports
+### References: 
+<DOC>cano13d2:15Cadiz earn injury time point vs. Rayo VallecanoCádizSOCCERCadiz score stunning last-gasp equalizer in LaLiga relegation battle vs. Celta19d1:04Cadiz score stunning last-gasp equalizer in La</DOC>
+<DOC>tico Madrid lost 2-0 at third-bottom Cadiz on Saturday as forward Juanmi scored twice to give the home side their first LaLiga win in six months and third in 28 games this season.6dReutersCRISTINA QUI</DOC>
+<DOC>Cádiz 0-3 Real Madrid: summary, score, goals, highlights, LaLiga 2023-24 - AS USAAS USALiveScoresSoccerNFLNBAMLBNCAAOther SportsRacingLatest NewsEntertainmentMeriStationStoriesLog inNewslettersSign in</DOC>
+<DOC>mPosted at: 10:47EST26/11/2023 Madrid with the edge in recent gamesThe corresponding fixture last season ended in the side from the capital recording a 0-2 win with goals from Nacho and Marco Asensio.</DOC>
+<DOC>2Sevilla2861012-728Mallorca2851211-1127Rayo Vallecano2851112-1526Celta Vigo285914-1324Cádiz2931313-2022Granada272817-2714Almería2801018-3010Standings2023-24 Team LeadersSpanish LALIGAGoalsAssists16Chr</DOC>
+<DOC>is RamosF #165Matches28Assists118Darwin MachisF #184Matches18Assists09Juanmi F #93Matches6Assists0Full Team StatisticsRankingsSpanish LALIGAGoal Difference-1818thGoals Scored2020thAssists1319thGoals C</DOC>
+<DOC>ish LALIGAGET1FT 0CADSpanish LALIGABAD0 FT-Pens0CADSpanish Copa del ReyCAD2 FT 2SEVSpanish LALIGAVAL2FT 0CADSpanish LALIGACAD0 FT1GIRSpanish LALIGAATM3FT 2CADSpanish LALIGACAD0 FT 0RAYSpanish LALIGABE</DOC>
+<DOC>ore ESPNMore ESPNSearchSoccerHomeScoresScheduleTablesTablesTransfersTransfersTeamsTeamsUSWNTUSMNTLeagues & CupsLeagues & CupsMoreMoreSpanish LALIGA Scoring Stats - 2023-24ScoringDisciplinePerformance2</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: what is the symbol of the constellation that includes altair?
+### Domain: open
+### References: 
+<DOC>Altair Location of Altair (circled) Observation dataEpoch J2000.097 Equinox J2000.0 (ICRS) Constellation Aquila Pronunciation /ˈæltɛər/, /ˈæltaɪər/[1][2] Right ascension 19h 50m 46.99855s[3] Declinati</DOC>
+<DOC>Nomenclature[edit] Altair is the brightest star in the constellation Aquila. α Aquilae (Latinised to Alpha Aquilae) is the star's Bayer designation.</DOC>
+<DOC>Altair – Constellations of Words Skip to content Constellations of Words Learn about the world of the stars above us Menu Home List of Constellations List of Stars Stars With Special Meanings Altair F</DOC>
+<DOC>The astrological influences of the star Altair Opinions are divided as to the exact nature of this star.</DOC>
+<DOC>Physical characteristics[edit] Altair in comparison with the Sun Along with β Aquilae and γ Aquilae, Altair forms the well-known line of stars sometimes referred to as the Family of Aquila or Shaft of</DOC>
+<DOC>"Altair: The Brightest δ Scuti Star".</DOC>
+<DOC>ixed star: ALTAIR “Al Nasr al Tair” Constellation: Alpha (α) Aquila Longitude 1900: 00AQU22 Longitude 2000: 01AQU47 Declination 1900: +08.36′ Declination 2000: +08.52′ Right ascension: 19h 50m Latitud</DOC>
+<DOC>[Altair is said to be included and those stars south of Altair are; beta (Alshain), gamma (Tarazed), iota, eta and lambda].</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": false}
+
+### Question: on a worldwide scale, what did abscond earn in box office sales?
+### Domain: movie
+### References: 
+<DOC>d films at the global box office.</DOC>
+<DOC>John Wick 4 has grossed $160 million domestically, and nearly $190 million from overseas territories, for a global haul of exactly $350 million.</DOC>
+<DOC>After 10 days in play, the film has grossed a terrific $245 million at the worldwide box office, of which $122 million comes from over 3,800 domestic theaters and $123 million from 75 overseas territo</DOC>
+<DOC>John Wick: Chapter 2 grossed $174 million globally against a budget of $40 million, and John Wick 3 finished with $327 million worldwide against a budget of $75 million.</DOC>
+<DOC>After nearly a month in theaters, John Wick: Chapter 4 has passed the $350 million mark at the global box office, extending its lead over John Wick: Chapter 3 — Parabellum as the highest-grossing movi</DOC>
+<DOC>John Wick: Chapter 4 opened in 71 international markets, and there are more on the way, as the film is playing in 75 total markets this weekend.</DOC>
+<DOC>For context, the film grossed a healthy $8 million in its fourth weekend of release, finishing third behind holdover hit The Super Mario Bros. Movie and newcomer The Pope's Exorcist.</DOC>
+<DOC>'John Wick: Chapter 4' Global Box Office Passes $402 Million Collider Newsletter Log in Trending 2024 Movie Releases Screenings What to Watch Originals Best Shows to Binge Watch Oscar Predictions Movi</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}
+
+### Question: on which date was mavis staples born?
+### Domain: music
+### References: 
+<DOC>If you leave without singing it, people will just keep clapping until you do.FAQ6Powered by AlexaHow old is Mavis Staples?When was Mavis Staples born?Where was Mavis Staples born?Related newsContribut</DOC>
+<DOC>Mavis Staples was born in Chicago, on July 10th, 1939.</DOC>
+<DOC>México)Use app BiographyAwardsTriviaFAQIMDbProAll topicsMavis StaplesActressMusic DepartmentAdditional CrewIMDbProStarmeterSee rankPlay trailer1:48Mavis! (2015)2 Videos9 PhotosMavis Staples was born o</DOC>
+<DOC>o reelHow much have you seen?Keep track of how much of Mavis Staples’s work you have seen.</DOC>
+<DOC>EVENTS VIDEOS Advertise Home»Featured»10 Things You Didn’t Know About Mavis Staples Featured 10 Things You Didn’t Know About Mavis StaplesBy JD NashDecember 14, 2021Updated:December 14, 2021No Comment</DOC>
+<DOC>okTwitterSearch jobsDigital ArchiveGuardian LicensingAbout UsBack to homepageView image in fullscreenMavis Staples At SummerStageAmerican Gospel and Soul singer Mavis Staples headlines the opening nig</DOC>
+<DOC>s6 Mins Read Facebook Twitter Pinterest LinkedIn Tumblr Email VKontakte WhatsApp Share Facebook Twitter LinkedIn Pinterest Email With her family band and as a solo artist, Mavis Staples‘ career has sp</DOC>
+<DOC>Mavis Staples: Nina Cried Power8.9Music VideoMavis Staples2018The Sacrifice of Victor8.1Video1995Graffiti Bridge4.4Melody Cool1990The Cosby Show7.4TV SeriesSoloist19901 episodeMavis Staples: 20th Cent</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}

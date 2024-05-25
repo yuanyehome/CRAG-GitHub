@@ -1,0 +1,47 @@
+Please predict the domain based on the question. The domain can be one of the following: sports, open, music, movie, finance.
+Here are a few examples:
+
+### Question: for how long did rihanna take a break from making music?
+### Domain: music
+
+### Question: what was the total number of shares traded for special opportunities fund during the first week of february?
+### Domain: finance
+
+### Question: who won best new artist at the 61st grammy (2018)?
+### Domain: music
+
+### Question: where did beyoncé get married?
+### Domain: music
+
+### Question: what price did the ppg industries open today?
+### Domain: finance
+
+### Question: what was the volume of trades for rcm on the last day?
+### Domain: finance
+
+### Question: how much national parks are there in the us?
+### Domain: open
+
+### Question: which basketball team came out on top in terms of total victories in 2022, miami heat or chicago bulls?
+### Domain: sports
+
+### Question: who played the main characters in ink & steel?
+### Domain: movie
+
+### Question: what is the largest national park in the us?
+### Domain: open
+
+### Question: what songs/albums did rihanna win grammy awards?
+### Domain: open
+
+### Question: how many "star wars" films were directed by george lucas?
+### Domain: movie
+
+### Question: what percentage of israel adesanya's ufc fights have ended in a decision?
+### Domain: sports
+
+### Question: which female boxers have retired undefeated with at least 20 wins?
+### Domain: sports
+
+### Question: at what time did the switch first premiere in theaters?
+### Domain: movie

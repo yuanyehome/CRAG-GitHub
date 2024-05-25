@@ -1,0 +1,42 @@
+You are asked to answer the question based on **the references** and **your knowledge**. If you are not sure and you can't find answer in the references, please be brave to answer "I don't know". **REMEMBER**: It is much better to answer "I don't know" than to give a wrong answer. You will be punished **SEVERLY** if you give the wrong answer. The output of your answer should be in JSON format, indicating the usefulness of these references, your confidence with the answer, and the answer itself.
+Here are a few examples:
+
+### Question: as the home team, how many total losses did sacramento kings have during 2022-12?
+### References: 
+<DOC>Between 2006 and 2022, the Kings had 16 consecutive losing seasons, the most in NBA history.[19] </DOC>
+<DOC>Sacramento was known for having strong fan support, and while they won over 60 percent of their home games, the team struggled on the road, going 1–40 on the road in a single season.</DOC>
+<DOC>See Less Kings bid for season sweep of Lakers Stats Mar 13, 2024 De'Aaron Fox scores 29 points and the Kings snap a 15-game skid against the Bucks with a 129-94 win Stats Mar 13, 2024 Show More Team S</DOC>
+<DOC>Sacramento Kings 2023-24 NBA Regular Season Stats - ESPN Skip to main contentSkip to navigationESPNNFLNFLNBANBANCAAMNCAAMNCAAWNCAAWNHLNHLSoccerSoccerMore SportsMore SportsESPN PlusESPN BETWatchWatchFa</DOC>
+### Answer: {"useful": false, "generation": "3", "confidence": false}
+
+### Question: can i make cookies in an air fryer?
+### References: 
+<DOC>Air Fryer Cookies FAQs Just for You Dessert Recipes Want more recipe ideas like this? explore Air Fryer Chocolate Chip Cookies 5 — Votes 5 votes By Cassy Joy Garcia Prep: 2 minutes minsCook: 12 minute</DOC>
+<DOC>Equipment1 Cosori Air Fryer Ingredients 1x2x3x▢ 1 package chocolate chip cookies Instructions Preheat the air fryer to 330°F.Line the air fryer basket with parchment paper.Place the cookies approximat</DOC>
+<DOC>Depending on the size of your air fryer, you should be able to fit 2-5 cookies about 1/5 inches apart to allow space for spreading.</DOC>
+<DOC>An air fryer can bake up a few cookies in about half the time an oven takes, and it doesn’t need much time for preheating.</DOC>
+### Answer: {"useful": true, "generation": "yes", "confidence": true}
+
+### Question: what were 3 of the most watched halloween movies of all time?
+### References: 
+<DOC>RELATED 37 Funny Halloween Movies to Watch Right Now, from ‘Clue’ to ‘Scream’ What Is the Most Watched Halloween Movie of All Time?To address one of the biggest debates, both Vudu and Fandango surveye</DOC>
+<DOC>The Top Halloween Movies/TV series of All-time.</DOC>
+<DOC>80 Best Halloween Movies of All Time (and How to Watch Them)SearchSubscribeMy BookmarksGH+ Member PortalProduct ReviewsHome IdeasFood + RecipesAll RecipesHealthBeauty + StyleHolidaysLifeAbout UsAwards</DOC>
+<DOC>The 10 best Halloween movies of all time, ranked - CBS News Latest U.S. World Politics Entertainment HealthWatch MoneyWatch Crime Sports Local News Baltimore Bay Area Boston Chicago Colorado Detroit L</DOC>
+### Answer: {"useful": true, "generation": "I don't know", "confidence": false}
+
+### Question: how many number one hits did the beatles have?
+### References: 
+<DOC>Contents ToggleSo, How Many Number Ones Did The Beatles Have?1.</DOC>
+<DOC>On the Hot 100, “Love Me Do” was The Beatles’ first song on the tally, reaching the summit in May 1964; they’d go on to earn 19 more No. 1s on the list.</DOC>
+<DOC>Over their decade of existence, the Beatles saw 20 number 1 hits on the Billboard charts.</DOC>
+<DOC>Going just by the music the band made from 1963-70, The Beatles can claim 20 Billboard No. 1 hits.</DOC>
+### Answer: {"useful": true, "generation": "20", "confidence": true}
+
+### Question: what was the total revenue of the top earning company worldwide, target?
+### References: 
+<DOC>Available: https://www.statista.com/statistics/263265/top-companies-in-the-world-by-revenue/HomeAbout StatistaCareerContactHelp & FAQReport BugPrivacyCookie settingsImprintMenu Prices & Access Popular</DOC>
+<DOC>Highest revenue companies 2023 | StatistaSkip to main contentStatista LogoStatista Logostatista.comstatista.esstatista.destatista.frPrices & Access Business Solutions Academia and Government Statistic</DOC>
+<DOC>Largest corporations based on revenue - additional information The concept of revenue itself might slightly differ depending on country or even from one company to another.</DOC>
+<DOC>Read more Top companies in the world by revenue 2023 Published by Einar H. Dyvik, Feb 13, 2024 With nearly 640 billion U.S. dollars in revenue, Walmart topped the ranking of the hundred largest compan</DOC>
+### Answer: {"useful": true, "generation": "I don't know", "confidence": false}

@@ -1,0 +1,62 @@
+You are asked to answer the question based on **the references** and **your knowledge**. If you are not sure and you can't find answer in the references, please be brave to answer "I don't know". **REMEMBER**: It is much better to answer "I don't know" than to give a wrong answer. You will be punished **SEVERLY** if you give the wrong answer. The output of your answer should be in JSON format, indicating the usefulness of these references, your confidence with the answer, and the answer itself.
+Here are a few examples:
+
+### Question: as the home team, how many total losses did sacramento kings have during 2022-12?
+### References: 
+<DOC>ce: 715,491 (20th of 30) NBA 2023 Playoffs: Lost NBA Western Conference First Round (3-4) versus Golden State Warriors (Series Stats) More Team Info Pacific Div Champs Kings Franchise Index Roster & S</DOC>
+<DOC>Between 2006 and 2022, the Kings had 16 consecutive losing seasons, the most in NBA history.[19] </DOC>
+<DOC>Sacramento was known for having strong fan support, and while they won over 60 percent of their home games, the team struggled on the road, going 1–40 on the road in a single season.</DOC>
+<DOC>See Less Kings bid for season sweep of Lakers Stats Mar 13, 2024 De'Aaron Fox scores 29 points and the Kings snap a 15-game skid against the Bucks with a 129-94 win Stats Mar 13, 2024 Show More Team S</DOC>
+<DOC>Sacramento Kings 2023-24 NBA Regular Season Stats - ESPN Skip to main contentSkip to navigationESPNNFLNFLNBANBANCAAMNCAAMNCAAWNCAAWNHLNHLSoccerSoccerMore SportsMore SportsESPN PlusESPN BETWatchWatchFa</DOC>
+<DOC>ntasyFantasyMore ESPNMore ESPNSearchSacramentoKingsFollow38-272nd in Pacific DivisionHomeStatsScheduleRosterDepthInjuriesTransactionsTicketsExternal LinkSacramento Kings Stats 2023-24More NBA TeamsAtl</DOC>
+<DOC>American professional basketball team Sacramento Kings 2023–24 Sacramento Kings seasonConferenceWesternDivisionPacificFounded1923HistoryRochester Seagrams1923–1942Rochester Eber Seagrams1942–1943Roche</DOC>
+<DOC>o Kings > 2022-23 Roster and Stats Welcome · Your Account Logout Ad-Free Login Create Account via Sports Logos.net About logos 2022-23 Sacramento Kings Roster and Stats Previous Season Next Season Rec</DOC>
+### Answer: {"useful": false, "generation": "i don't know", "confidence": false}
+
+### Question: can i make cookies in an air fryer?
+### References: 
+<DOC>Air Fryer Cookies FAQs Just for You Dessert Recipes Want more recipe ideas like this? explore Air Fryer Chocolate Chip Cookies 5 — Votes 5 votes By Cassy Joy Garcia Prep: 2 minutes minsCook: 12 minute</DOC>
+<DOC>Equipment1 Cosori Air Fryer Ingredients 1x2x3x▢ 1 package chocolate chip cookies Instructions Preheat the air fryer to 330°F.Line the air fryer basket with parchment paper.Place the cookies approximat</DOC>
+<DOC>o the magic of the air fryer, deliciously soft and warm cookies can be yours in a flash.</DOC>
+<DOC>Depending on the size of your air fryer, you should be able to fit 2-5 cookies about 1/5 inches apart to allow space for spreading.</DOC>
+<DOC>An air fryer can bake up a few cookies in about half the time an oven takes, and it doesn’t need much time for preheating.</DOC>
+<DOC>Make the perfect cookie in the air fryer for fast treats that your family will love.</DOC>
+<DOC>In fact, this kind of crispy-outside effect is what the air fryer excels at!Air Fryer Cookie TipsHere’s what to do: Prepare your dough (or if you’re using premade dough, get it out of the fridge), div</DOC>
+<DOC>Lastly, go ahead and line your air fryer with parchment paper and scoop cookie batter into the air fryer.</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: what were 3 of the most watched halloween movies of all time?
+### References: 
+<DOC>RELATED 37 Funny Halloween Movies to Watch Right Now, from ‘Clue’ to ‘Scream’ What Is the Most Watched Halloween Movie of All Time?To address one of the biggest debates, both Vudu and Fandango surveye</DOC>
+<DOC>The Top Halloween Movies/TV series of All-time.</DOC>
+<DOC>80 Best Halloween Movies of All Time (and How to Watch Them)SearchSubscribeMy BookmarksGH+ Member PortalProduct ReviewsHome IdeasFood + RecipesAll RecipesHealthBeauty + StyleHolidaysLifeAbout UsAwards</DOC>
+<DOC>The 10 best Halloween movies of all time, ranked - CBS News Latest U.S. World Politics Entertainment HealthWatch MoneyWatch Crime Sports Local News Baltimore Bay Area Boston Chicago Colorado Detroit L</DOC>
+<DOC>Here's a countdown of the 10 best Halloween movies of all time.</DOC>
+<DOC>Halloween (1978) Cast: Donald Pleasence, Jamie Lee Curtis, Tony MoranRun time: 91 minutesAs the first movie in the Halloween franchise, it introduces viewers to serial killer Michael Myers (Nick Castl</DOC>
+<DOC>Well, the votes are in: Hocus Pocus is the most popular Halloween flick (hence why we included it on this list).Warner Bros.1.</DOC>
+<DOC>Director: Steven Spielberg | Stars: Henry Thomas, Drew Barrymore, Peter Coyote, Dee Wallace Votes: 435,593 | Gross: $435.11M Takes place around Halloween.</DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: how many number one hits did the beatles have?
+### References: 
+<DOC>Contents ToggleSo, How Many Number Ones Did The Beatles Have?1.</DOC>
+<DOC>usic MusicDid The Beatles Have More No. 1 Hits Than Elvis?Elvis Presley and The Beatles both had a slew of No. 1 hits.</DOC>
+<DOC>On the Hot 100, “Love Me Do” was The Beatles’ first song on the tally, reaching the summit in May 1964; they’d go on to earn 19 more No. 1s on the list.</DOC>
+<DOC>Over their decade of existence, the Beatles saw 20 number 1 hits on the Billboard charts.</DOC>
+<DOC>Going just by the music the band made from 1963-70, The Beatles can claim 20 Billboard No. 1 hits.</DOC>
+<DOC>Their debut studio album, 1963’s ‘Please Please Me,’ peaked at No. 155 on the Billboard 200, with the band eventually securing 19 No. 1 albums on the chart; they are also the musical act with most wee</DOC>
+<DOC>Hey Jude “Hey Jude” is The Beatles' most-successful song on the Billboard charts, hanging around at No. 1 for nine weeks.</DOC>
+<DOC>4 26 Hey Jude The Beatles 09.14.68 1 9 WKS 09.28.68 19 Got To Get You Into My Life The Beatles 06.12.76 7 12 Wks 07.24.76 16 Come Together/Something The Beatles 10.18.69 1 1 WKS 11.29.69 16 I Want To </DOC>
+### Answer: {"useful": true, "generation": "i don't know", "confidence": true}
+
+### Question: what was the total revenue of the top earning company worldwide, target?
+### References: 
+<DOC>May 2023, by market capLeading insurance companies globally 2022, by revenueGross premiums of the insurance industry worldwide 2000-2020The most important statisticsTotal revenue of Berkshire Hathaway</DOC>
+<DOC>oogle, and Microsoft: revenue comparison 2008-2023Workforce of leading global online companies 2014-2023Revenue growth of leading tech companies 2018-2023Ranking of the 50 most profitable companies wo</DOC>
+<DOC>Available: https://www.statista.com/statistics/263265/top-companies-in-the-world-by-revenue/HomeAbout StatistaCareerContactHelp & FAQReport BugPrivacyCookie settingsImprintMenu Prices & Access Popular</DOC>
+<DOC>Highest revenue companies 2023 | StatistaSkip to main contentStatista LogoStatista Logostatista.comstatista.esstatista.destatista.frPrices & Access Business Solutions Academia and Government Statistic</DOC>
+<DOC>company in the world, with profits of over 247 billion U.S. dollars.</DOC>
+<DOC>Largest corporations based on revenue - additional information The concept of revenue itself might slightly differ depending on country or even from one company to another.</DOC>
+<DOC>Read more Top companies in the world by revenue 2023 Published by Einar H. Dyvik, Feb 13, 2024 With nearly 640 billion U.S. dollars in revenue, Walmart topped the ranking of the hundred largest compan</DOC>
+<DOC>Statista, Statista Inc., 9 Jan 2024, https://www.statista.com/statistics/263265/top-companies-in-the-world-by-revenue/CompaniesMarketCap.com, The 100 largest companies in the world ranked by revenue i</DOC>
+### Answer: {"useful": true, "generation": "actually, walmart has the highest revenue earning over $640 billion.", "confidence": true}
