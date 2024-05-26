@@ -499,6 +499,7 @@ if __name__ == "__main__":
     parser.add_argument("--log-dir", type=str)
     parser.add_argument("--local-large-files-path", type=str)
     parser.add_argument("--custom_local_model_path", type=str)
+    parser.add_argument("--vllm_gpu_memory_utilization", type=float, default=0.6)
     args = parser.parse_args()
     if args.log_dir:
         LOG_DIR = args.log_dir
