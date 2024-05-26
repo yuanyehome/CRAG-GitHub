@@ -219,7 +219,7 @@ def get_few_shots(dataset_items: list, num_shots: int, key: str):
 
 
 class AttrPredictor:
-    def __init__(self, method: str, vllm_model: vllm.LLM = None, seed: int=42):
+    def __init__(self, method: str, vllm_model: vllm.LLM = None, seed: int = 20000317):
         assert method in ["svm", "few-shot"]
         if method == "svm":
             raise NotImplementedError
