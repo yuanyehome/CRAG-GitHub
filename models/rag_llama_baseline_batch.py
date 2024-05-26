@@ -10,6 +10,8 @@ from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
+from models.attr_predictor import AttrPredictor
+
 os.system("pip list")
 os.system("nvidia-smi")
 
@@ -185,6 +187,9 @@ class BatchRAGModel:
         custom_local_model_path=None,
         quantization=None,
         vllm_gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
+        idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
+        attr_predictor_method="few-shot",
+        return_additional_info: bool = False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -197,7 +202,15 @@ class BatchRAGModel:
         if self.model_size == "70B" and quantization is None:
             self.quantization = "gptq"
         assert self.model_size in ["8B", "70B"]
+        self.idk_attrs = idk_attrs
+        self.return_additional_info = return_additional_info
         self.initialize_models()
+        self.attr_predictor = None
+        if self.idk_attrs is not None:
+            assert attr_predictor_method is not None
+            for attr_name in self.idk_attrs.keys():
+                assert attr_name in ["domain", "question_type", "static_or_dynamic"]
+            self.attr_predictor = AttrPredictor(attr_predictor_method, self.llm)
         self.chunk_extractor = ChunkExtractor()
 
     def initialize_models(self):
@@ -363,6 +376,16 @@ class BatchRAGModel:
             # use a vectorDB directly.
             batch_retrieval_results.append(retrieval_results)
 
+        answers = [None for _ in queries]
+        all_predicted_attrs = {}
+        if self.idk_attrs:
+            for attr_name in self.idk_attrs.keys():
+                predicted_attrs = self.attr_predictor.predict_attr(batch, attr_name)
+                all_predicted_attrs[attr_name] = predicted_attrs
+                for idx, pred_attr in enumerate(predicted_attrs):
+                    if pred_attr in self.idk_attrs[attr_name]:
+                        answers[idx] = "I don't know."
+
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
             queries, query_times, batch_retrieval_results
@@ -387,14 +410,18 @@ class BatchRAGModel:
         )
 
         # Aggregate answers into List[str]
-        answers = []
-        for response in responses:
+        # answers = []
+        for idx, response in enumerate(responses):
             ret_answer = response.outputs[0].text.strip().rstrip()
             if ret_answer == "":
                 ret_answer = "I don't know."
-            answers.append(ret_answer)
+            if answers[idx] is None:
+                answers[idx] = ret_answer
 
-        return answers
+        if self.return_additional_info:
+            return answers, {"all_predicted_attrs": all_predicted_attrs}
+        else:
+            return answers
 
     def format_prompts(self, queries, query_times, batch_retrieval_results=[]):
         """

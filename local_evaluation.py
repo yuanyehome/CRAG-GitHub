@@ -172,13 +172,33 @@ def generate_predictions(dataset_path, participant_model):
     logger.info(f"Batch size: {batch_size}")
     logger.info(f"Number of batches: {batch_num}")
     batch_data_generator = load_data_in_batches(dataset_items, batch_size)
+    all_predicted_attrs: list[dict[str, str]] = []
     for batch in tqdm(
         batch_data_generator, desc="Generating predictions", total=batch_num
     ):
         batch_ground_truths = batch.pop(
             "answer"
         )  # Remove answers from batch and store them
-        batch_predictions = participant_model.batch_generate_answer(batch)
+        batch_predictions, batch_additional_info = (
+            participant_model.batch_generate_answer(batch)
+        )
+        if "all_predicted_attrs" in batch_additional_info:
+            batch_predicted_attrs: dict[str, list[str]] = batch_additional_info[
+                "all_predicted_attrs"
+            ]
+            curr_pred_attrs_list = [{} for _ in range(len(batch["query"]))]
+            for attr_name in batch_predicted_attrs:
+                for idx in range(len(batch_predicted_attrs[attr_name])):
+                    if attr_name not in curr_pred_attrs_list[idx]:
+                        curr_pred_attrs_list[idx][attr_name] = batch_predicted_attrs[
+                            attr_name
+                        ][idx]
+                    else:
+                        raise ValueError(
+                            f"Attribute {attr_name} already exists for index {idx}"
+                        )
+            all_predicted_attrs.extend(curr_pred_attrs_list)
+            # logger.debug(len(all_predicted_attrs))
         queries.extend(batch["query"])
         domains.extend(batch["domain"])
         question_types.extend(batch["question_type"])
@@ -186,11 +206,32 @@ def generate_predictions(dataset_path, participant_model):
         ground_truths.extend(batch_ground_truths)
         predictions.extend(batch_predictions)
     final_predictions = []
+    assert (
+        len(queries)
+        == len(ground_truths)
+        == len(predictions)
+        == len(domains)
+        == len(question_types)
+        == len(static_or_dynamics)
+    )
+    if len(all_predicted_attrs) > 0:
+        assert len(all_predicted_attrs) == len(queries), (
+            len(all_predicted_attrs),
+            len(queries),
+        )
+    for idx in range(len(all_predicted_attrs)):
+        with open(os.path.join(LOG_DIR, "all_predicted_attrs.jsonl"), "w") as f:
+            f.write(json.dumps(all_predicted_attrs[idx]) + "\n")
+    curr_idx = 0
     for query, ground_truth, prediction, domain, ques_type, static_or_dynamic in zip(
         queries, ground_truths, predictions, domains, question_types, static_or_dynamics
     ):
         # trim prediction to 75 tokens
         prediction = trim_predictions_to_max_token_length(prediction)
+        if len(all_predicted_attrs) > 0:
+            pred_attrs = all_predicted_attrs[curr_idx]
+        else:
+            pred_attrs = {}
         final_predictions.append(
             {
                 "query": query,
@@ -199,8 +240,10 @@ def generate_predictions(dataset_path, participant_model):
                 "domain": domain,
                 "question_type": ques_type,
                 "static_or_dynamic": static_or_dynamic,
+                "pred_attrs": pred_attrs,
             }
         )
+        curr_idx += 1
     return final_predictions
 
 
@@ -385,6 +428,57 @@ def evaluate_predictions(predictions, evaluation_model_name, openai_client: Open
     return results
 
 
+def evaluate_attr_predictions(predictions: list[dict]):
+    acc_by_values = {}
+    for pred in predictions:
+        pred_attrs = pred["pred_attrs"]
+        for attr_name in pred_attrs:
+            curr_pred = pred_attrs[attr_name]
+            if attr_name not in acc_by_values:
+                acc_by_values[attr_name] = {}
+            if attr_name == "domain":
+                curr_domain = pred["domain"]
+                curr_gt = curr_domain
+            elif attr_name == "question_type":
+                curr_ques_type = pred["question_type"]
+                if curr_ques_type in ["simple", "simple_w_condition"]:
+                    curr_ques_type = "simple"
+                else:
+                    curr_ques_type = "complex"
+                curr_gt = curr_ques_type
+            elif attr_name == "static_or_dynamic":
+                curr_static_or_dynamic = pred["static_or_dynamic"]
+                if curr_static_or_dynamic in ["static", "slow-changing"]:
+                    curr_static_or_dynamic = "static"
+                else:
+                    curr_static_or_dynamic = "dynamic"
+                curr_gt = curr_static_or_dynamic
+            else:
+                raise ValueError(f"Unknown attribute name: {attr_name}")
+            if curr_gt not in acc_by_values[attr_name]:
+                acc_by_values[attr_name][curr_gt] = [0, 0]
+            if curr_pred == curr_gt:
+                acc_by_values[attr_name][curr_gt][0] += 1
+            acc_by_values[attr_name][curr_gt][1] += 1
+    for attr_name in acc_by_values:
+        name_correct = 0
+        name_total = 0
+        for value in acc_by_values[attr_name]:
+            name_correct += acc_by_values[attr_name][value][0]
+            name_total += acc_by_values[attr_name][value][1]
+            acc_by_values[attr_name][value].append(
+                acc_by_values[attr_name][value][0] / acc_by_values[attr_name][value][1]
+            )
+        acc_by_values[attr_name]["total"] = [
+            name_correct,
+            name_total,
+            name_correct / name_total,
+        ]
+    logger.info(json.dumps(acc_by_values, indent=2))
+    with open(os.path.join(LOG_DIR, "attr_predictions_res.json"), "w") as f:
+        json.dump(acc_by_values, f, indent=2)
+
+
 def setup_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -432,10 +526,14 @@ if __name__ == "__main__":
         nprocs=torch.cuda.device_count(),
         local_large_files_path=args.local_large_files_path,
         custom_local_model_path=args.custom_local_model_path,
-        vllm_gpu_memory_utilization=0.6
+        vllm_gpu_memory_utilization=0.6,
+        idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
+        attr_predictor_method="few-shot",
+        return_additional_info=True,
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)
+    evaluate_attr_predictions(predictions)
 
     evaluation_results = evaluate_predictions(
         predictions, EVALUATION_MODEL_NAME, openai_client
