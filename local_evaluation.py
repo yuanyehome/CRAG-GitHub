@@ -527,8 +527,6 @@ if __name__ == "__main__":
         local_large_files_path=args.local_large_files_path,
         custom_local_model_path=args.custom_local_model_path,
         vllm_gpu_memory_utilization=0.6,
-        idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
-        attr_predictor_method="few-shot",
         return_additional_info=True,
     )
     logger.info(f"Using model: {participant_model}")
