@@ -500,6 +500,7 @@ if __name__ == "__main__":
     parser.add_argument("--local-large-files-path", type=str)
     parser.add_argument("--custom_local_model_path", type=str)
     parser.add_argument("--vllm_gpu_memory_utilization", type=float, default=0.6)
+    parser.add_argument("--sentence_model_name", type=str, default="all-MiniLM-L6-v2")
     args = parser.parse_args()
     if args.log_dir:
         LOG_DIR = args.log_dir
@@ -529,6 +530,7 @@ if __name__ == "__main__":
         custom_local_model_path=args.custom_local_model_path,
         vllm_gpu_memory_utilization=args.vllm_gpu_memory_utilization,
         return_additional_info=True,
+        sentence_model_name=args.sentence_model_name,
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)

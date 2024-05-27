@@ -190,6 +190,7 @@ class BatchRAGModel:
         idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
+        sentence_model_name: str = "all-MiniLM-L6-v2",
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -204,6 +205,7 @@ class BatchRAGModel:
         assert self.model_size in ["8B", "70B"]
         self.idk_attrs = idk_attrs
         self.return_additional_info = return_additional_info
+        self.sentence_model_name = sentence_model_name
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -252,11 +254,11 @@ class BatchRAGModel:
 
         # Load a sentence transformer model optimized for sentence embeddings, using CUDA if available.
         sentence_model_path = (
-            "large-files/ckpts/sentence-transformers/all-MiniLM-L6-v2"
+            f"large-files/ckpts/sentence-transformers/{self.sentence_model_name}"
             if self.local_large_files_path is None
             else os.path.join(
                 self.local_large_files_path,
-                "large-files/ckpts/sentence-transformers/all-MiniLM-L6-v2",
+                f"large-files/ckpts/sentence-transformers/{self.sentence_model_name}",
             )
         )
         self.sentence_model = SentenceTransformer(
