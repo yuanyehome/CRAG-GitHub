@@ -131,7 +131,7 @@ class ChunkExtractor:
 
         if not text:
             # Return a list with empty string when no text is extracted
-            return interaction_id, [""]
+            return interaction_id, [""], [""]
 
         # Extract offsets of sentences from the text
         _, offsets = text_to_sentences_and_offsets(text)
