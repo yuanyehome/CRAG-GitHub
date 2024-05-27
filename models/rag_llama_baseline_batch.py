@@ -59,7 +59,7 @@ VLLM_TENSOR_PARALLEL_SIZE = 4  # TUNE THIS VARIABLE depending on the number of G
 VLLM_GPU_MEMORY_UTILIZATION = 0.9  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
 
 # Sentence Transformer Parameters
-SENTENTENCE_TRANSFORMER_BATCH_SIZE = 128  # TUNE THIS VARIABLE depending on the size of your embedding model and GPU mem available
+SENTENTENCE_TRANSFORMER_BATCH_SIZE = 32  # TUNE THIS VARIABLE depending on the size of your embedding model and GPU mem available
 
 #### CONFIG PARAMETERS END---
 
@@ -190,7 +190,7 @@ class BatchRAGModel:
         idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
-        sentence_model_name: str = "all-MiniLM-L6-v2",
+        sentence_model_name: str = "sentence-t5-large",
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -263,8 +263,9 @@ class BatchRAGModel:
         )
         self.sentence_model = SentenceTransformer(
             sentence_model_path,
-            device=torch.device("cuda:0"),
+            device=torch.device("cpu"),
         )
+        self.sentence_model = self.sentence_model.half().cuda(0)
         print("After initializing models, GPU Memory info:")
         os.system("nvidia-smi")
 
