@@ -254,6 +254,7 @@ class BatchRAGModel:
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
+        max_table_length: int = 2000,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -269,6 +270,7 @@ class BatchRAGModel:
         self.idk_attrs = idk_attrs
         self.return_additional_info = return_additional_info
         self.sentence_model_name = sentence_model_name
+        self.max_table_length = max_table_length
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -528,12 +530,14 @@ class BatchRAGModel:
                     references += f"- {snippet.strip()}\n"
 
             user_message += f"{references}\n------\n\n"
+            table_references = ""
             if len(tables) > 0:
                 user_message += "## Table references\n"
                 for idx, table in enumerate(tables):
-                    user_message += f"### Table {idx + 1}:\n"
-                    user_message += f"{table}\n"
-                user_message += "\n------\n\n"
+                    table_references += f"### Table {idx + 1}:\n"
+                    table_references += f"{table}\n"
+            table_references = table_references[: self.max_table_length]
+            user_message += f"{table_references}\n------\n\n"
             user_message += "**Remember your rule**: If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. There is no need to explain the reasoning behind your answers.\n"
             user_message += (
                 f"Using the references listed above, answer the following question: \n"
