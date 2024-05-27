@@ -527,7 +527,7 @@ if __name__ == "__main__":
         nprocs=torch.cuda.device_count(),
         local_large_files_path=args.local_large_files_path,
         custom_local_model_path=args.custom_local_model_path,
-        vllm_gpu_memory_utilization=0.6,
+        vllm_gpu_memory_utilization=args.vllm_gpu_memory_utilization,
         return_additional_info=True,
     )
     logger.info(f"Using model: {participant_model}")
