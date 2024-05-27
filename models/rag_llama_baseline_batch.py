@@ -376,7 +376,7 @@ class BatchRAGModel:
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
-        use_table_info: bool = False,
+        use_table_info: bool = True,
         max_table_length: int = 2000,
     ):
         self.batch_size = batch_size
