@@ -500,7 +500,7 @@ if __name__ == "__main__":
     parser.add_argument("--local-large-files-path", type=str)
     parser.add_argument("--custom_local_model_path", type=str)
     parser.add_argument("--vllm_gpu_memory_utilization", type=float, default=0.6)
-    parser.add_argument("--sentence_model_name", type=str, default="all-MiniLM-L6-v2")
+    parser.add_argument("--sentence_model_name", type=str, default="sentence-t5-large")
     args = parser.parse_args()
     if args.log_dir:
         LOG_DIR = args.log_dir
