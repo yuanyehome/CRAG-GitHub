@@ -546,6 +546,7 @@ if __name__ == "__main__":
         vllm_gpu_memory_utilization=args.vllm_gpu_memory_utilization,
         return_additional_info=True,
         sentence_model_name=args.sentence_model_name,
+        use_table_info=True,
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)
