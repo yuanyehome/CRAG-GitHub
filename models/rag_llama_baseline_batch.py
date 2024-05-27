@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
 from models.attr_predictor import AttrPredictor
+from models.utils_html import get_tables, clean_html
 
 os.system("pip list")
 os.system("nvidia-smi")
@@ -155,7 +156,9 @@ class ChunkExtractor:
                 else:
                     chunks.append(sentence)
 
-        return interaction_id, chunks
+        tables = get_tables(clean_html(html_source))
+
+        return interaction_id, chunks, tables
 
     def extract_chunks(self, batch_interaction_ids, batch_search_results):
         """
@@ -183,19 +186,23 @@ class ChunkExtractor:
         # Wait until all sentence extractions are complete
         # and collect chunks for every interaction_id separately
         chunk_dictionary = defaultdict(list)
+        table_dictionary = defaultdict(list)
 
         for response_ref in ray_response_refs:
-            interaction_id, _chunks = ray.get(
+            interaction_id, _chunks, _tables = ray.get(
                 response_ref
             )  # Blocking call until parallel execution is complete
             chunk_dictionary[interaction_id].extend(_chunks)
+            table_dictionary[interaction_id].extend(_tables)
 
         # Flatten chunks and keep a map of corresponding interaction_ids
-        chunks, chunk_interaction_ids = self._flatten_chunks(chunk_dictionary)
+        chunks, tables, chunk_interaction_ids = self._flatten_chunks(
+            chunk_dictionary, table_dictionary
+        )
 
-        return chunks, chunk_interaction_ids
+        return chunks, tables, chunk_interaction_ids
 
-    def _flatten_chunks(self, chunk_dictionary):
+    def _flatten_chunks(self, chunk_dictionary, table_dictionary):
         """
         Flattens the chunk dictionary into separate lists for chunks and their corresponding interaction IDs.
 
@@ -206,6 +213,7 @@ class ChunkExtractor:
             Tuple[np.ndarray, np.ndarray]: A tuple containing an array of chunks and an array of corresponding interaction IDs.
         """
         chunks = []
+        tables = []
         chunk_interaction_ids = []
 
         for interaction_id, _chunks in chunk_dictionary.items():
@@ -214,11 +222,16 @@ class ChunkExtractor:
             chunks.extend(unique_chunks)
             chunk_interaction_ids.extend([interaction_id] * len(unique_chunks))
 
+            _tables = table_dictionary[interaction_id]
+            unique_tables = list(set(_tables))
+            tables.extend(unique_tables)
+
         # Convert to numpy arrays for convenient slicing/masking operations later
         chunks = np.array(chunks)
+        tables = np.array(tables)
         chunk_interaction_ids = np.array(chunk_interaction_ids)
 
-        return chunks, chunk_interaction_ids
+        return chunks, tables, chunk_interaction_ids
 
 
 class BatchRAGModel:
@@ -394,7 +407,7 @@ class BatchRAGModel:
         # print(len(query_times))
 
         # Chunk all search results using ChunkExtractor
-        chunks, chunk_interaction_ids = self.chunk_extractor.extract_chunks(
+        chunks, tables, chunk_interaction_ids = self.chunk_extractor.extract_chunks(
             batch_interaction_ids, batch_search_results
         )
 
@@ -442,7 +455,7 @@ class BatchRAGModel:
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
-            queries, query_times, batch_retrieval_results
+            queries, query_times, batch_retrieval_results, tables
         )
 
         # Generate responses via vllm
@@ -465,19 +478,30 @@ class BatchRAGModel:
 
         # Aggregate answers into List[str]
         # answers = []
+        prompt_lens = []
         for idx, response in enumerate(responses):
             ret_answer = response.outputs[0].text.strip().rstrip()
+            prompt_lens.append(len(response.prompt_token_ids))
             if ret_answer == "":
                 ret_answer = "I don't know."
             if answers[idx] is None:
                 answers[idx] = ret_answer
 
         if self.return_additional_info:
-            return answers, {"all_predicted_attrs": all_predicted_attrs}
+            return answers, {
+                "all_predicted_attrs": all_predicted_attrs,
+                "prompt_lens": prompt_lens,
+            }
         else:
             return answers
 
-    def format_prompts(self, queries, query_times, batch_retrieval_results=[]):
+    def format_prompts(
+        self,
+        queries,
+        query_times,
+        batch_retrieval_results: list[str] = [],
+        tables: list[str] = [],
+    ):
         """
         Formats queries, corresponding query_times and retrieval results using the chat_template of the model.
 
@@ -504,6 +528,12 @@ class BatchRAGModel:
                     references += f"- {snippet.strip()}\n"
 
             user_message += f"{references}\n------\n\n"
+            if len(tables) > 0:
+                user_message += "## Table references\n"
+                for idx, table in enumerate(tables):
+                    user_message += f"### Table {idx + 1}:\n"
+                    user_message += f"{table}\n"
+                user_message += "\n------\n\n"
             user_message += "**Remember your rule**: If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. There is no need to explain the reasoning behind your answers.\n"
             user_message += (
                 f"Using the references listed above, answer the following question: \n"

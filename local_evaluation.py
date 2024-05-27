@@ -152,6 +152,7 @@ def generate_predictions(dataset_path, participant_model):
     queries, ground_truths, predictions = [], [], []
     domains, question_types, static_or_dynamics = [], [], []
     batch_size = participant_model.get_batch_size()
+    all_prompt_lens: list[int] = []
 
     dataset_items = []
     if not args.use_public_test:
@@ -199,6 +200,8 @@ def generate_predictions(dataset_path, participant_model):
                         )
             all_predicted_attrs.extend(curr_pred_attrs_list)
             # logger.debug(len(all_predicted_attrs))
+        if "prompt_lens" in batch_additional_info:
+            all_prompt_lens.extend(batch_additional_info["prompt_lens"])
         queries.extend(batch["query"])
         domains.extend(batch["domain"])
         question_types.extend(batch["question_type"])
@@ -241,9 +244,21 @@ def generate_predictions(dataset_path, participant_model):
                 "question_type": ques_type,
                 "static_or_dynamic": static_or_dynamic,
                 "pred_attrs": pred_attrs,
+                "prompt_len": all_prompt_lens[curr_idx] if all_prompt_lens else "N/A",
             }
         )
         curr_idx += 1
+    logger.info(f"Max prompt length: {max(all_prompt_lens)}")
+    logger.info(f"Min prompt length: {min(all_prompt_lens)}")
+    sorted_all_prompt_lens = sorted(all_prompt_lens)
+    for i in range(1, 10):
+        logger.info(
+            f"{i * 10}%: {sorted_all_prompt_lens[len(sorted_all_prompt_lens) * i // 10]}"
+        )
+    # save all prompt lens
+    with open(os.path.join(LOG_DIR, "all_prompt_lens.txt"), "w") as f:
+        for prompt_len in all_prompt_lens:
+            f.write(f"{prompt_len}\n")
     return final_predictions
 
 
