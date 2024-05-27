@@ -13,3 +13,4 @@ transformers
 Levenshtein
 vllm>=0.4.2
 auto_gptq
+trafilatura

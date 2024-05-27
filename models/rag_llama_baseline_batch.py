@@ -6,6 +6,7 @@ import numpy as np
 import ray
 import torch
 import vllm
+import trafilatura
 from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
@@ -64,10 +65,44 @@ SENTENTENCE_TRANSFORMER_BATCH_SIZE = 32  # TUNE THIS VARIABLE depending on the s
 #### CONFIG PARAMETERS END---
 
 
+START_WORDS = [
+    "who",
+    "what",
+    "when",
+    "where",
+    "why",
+    "how",
+    "is",
+    "can",
+    "does",
+    "do",
+    "did",
+    "will",
+    "would",
+    "could",
+    "should",
+    "are",
+    "was",
+    "were",
+    "has",
+    "have",
+    "had",
+    "which",
+    "whom",
+    "whose",
+]
+
+
+def is_question(sentence: str):
+    return sentence.lower().endswith("?") or sentence.lower().startswith(
+        tuple(START_WORDS)
+    )
+
+
 class ChunkExtractor:
 
     @ray.remote
-    def _extract_chunks(self, interaction_id, html_source):
+    def _extract_chunks(self, interaction_id, html_source, html_snippet):
         """
         Extracts and returns chunks from given HTML source.
 
@@ -83,10 +118,15 @@ class ChunkExtractor:
             Tuple[str, List[str]]: A tuple containing the interaction ID and a list of sentences extracted from the HTML content.
         """
         # Parse the HTML content using BeautifulSoup
-        soup = BeautifulSoup(html_source, "lxml")
-        text = soup.get_text(
-            " ", strip=True
-        )  # Use space as a separator, strip whitespaces
+        text = trafilatura.extract(html_source, favor_precision=True, deduplicate=True)
+        if text is None:
+            soup = BeautifulSoup(html_source, "lxml")
+            text = soup.get_text(
+                " ", strip=True
+            )  # Use space as a separator, strip whitespaces
+        text.replace("\n", " ").replace("\t", " ").replace("\r", " ")
+        text = text.strip()
+        text = " ".join(text.split())
 
         if not text:
             # Return a list with empty string when no text is extracted
@@ -105,6 +145,15 @@ class ChunkExtractor:
             while len(sentence) > MAX_CONTEXT_SENTENCE_LENGTH:
                 chunks.append(sentence[:MAX_CONTEXT_SENTENCE_LENGTH])
                 sentence = sentence[MAX_CONTEXT_SENTENCE_LENGTH:]
+            else:
+                if is_question(sentence):
+                    chunks.append(
+                        "{} {}".format(
+                            sentence, text[end : end + MAX_CONTEXT_SENTENCE_LENGTH]
+                        )
+                    )
+                else:
+                    chunks.append(sentence)
 
         return interaction_id, chunks
 
@@ -125,6 +174,7 @@ class ChunkExtractor:
                 self,
                 interaction_id=batch_interaction_ids[idx],
                 html_source=html_text["page_result"],
+                html_snippet=html_text["page_snippet"],
             )
             for idx, search_results in enumerate(batch_search_results)
             for html_text in search_results
@@ -261,6 +311,7 @@ class BatchRAGModel:
                 f"large-files/ckpts/sentence-transformers/{self.sentence_model_name}",
             )
         )
+        print("Sentence model path: {}".format(sentence_model_path))
         self.sentence_model = SentenceTransformer(
             sentence_model_path,
             device=torch.device("cpu"),
