@@ -6,6 +6,7 @@ import numpy as np
 import ray
 import torch
 import vllm
+import json
 import trafilatura
 from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
@@ -406,6 +407,29 @@ class BatchRAGModel:
             self.chunk_extractor = ChunkTableExtractor()
         else:
             self.chunk_extractor = ChunkExtractor()
+
+        # print all configs
+        print("Configs:")
+        print(
+            json.dumps(
+                {
+                    "self.batch_size": self.batch_size,
+                    "self.nprocs": self.nprocs,
+                    "self.sentence_transformer_bsz": self.sentence_transformer_bsz,
+                    "self.local_large_files_path": self.local_large_files_path,
+                    "self.model_size": self.model_size,
+                    "self.custom_local_model_path": self.custom_local_model_path,
+                    "self.quantization": self.quantization,
+                    "self.vllm_gpu_memory_utilization": self.vllm_gpu_memory_utilization,
+                    "self.idk_attrs": self.idk_attrs,
+                    "self.return_additional_info": self.return_additional_info,
+                    "self.sentence_model_name": self.sentence_model_name,
+                    "self.use_table_info": self.use_table_info,
+                    "self.max_table_length": self.max_table_length,
+                },
+                indent=2,
+            )
+        )
 
     def initialize_models(self):
         # Initialize Meta Llama 3 - 8B Instruct Model
