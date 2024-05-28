@@ -103,6 +103,8 @@ def is_question(sentence: str):
 
 
 class ChunkExtractor:
+    def __init__(self, max_context_sentence_length):
+        self.max_context_sentence_length = max_context_sentence_length
 
     @ray.remote
     def _extract_chunks(self, interaction_id, html_source, html_snippet):
@@ -145,14 +147,14 @@ class ChunkExtractor:
         for start, end in offsets:
             # Extract the sentence and limit its length
             sentence = text[start:end]
-            while len(sentence) > MAX_CONTEXT_SENTENCE_LENGTH:
-                chunks.append(sentence[:MAX_CONTEXT_SENTENCE_LENGTH])
-                sentence = sentence[MAX_CONTEXT_SENTENCE_LENGTH:]
+            while len(sentence) > self.max_context_sentence_length:
+                chunks.append(sentence[: self.max_context_sentence_length])
+                sentence = sentence[self.max_context_sentence_length :]
             else:
                 if is_question(sentence):
                     chunks.append(
                         "{} {}".format(
-                            sentence, text[end : end + MAX_CONTEXT_SENTENCE_LENGTH]
+                            sentence, text[end : end + self.max_context_sentence_length]
                         )
                     )
                 else:
@@ -225,6 +227,8 @@ class ChunkExtractor:
 
 
 class ChunkTableExtractor:
+    def __init__(self, max_context_sentence_length):
+        self.max_context_sentence_length = max_context_sentence_length
 
     @ray.remote
     def _extract_chunks(self, interaction_id, html_source, html_snippet):
@@ -267,14 +271,14 @@ class ChunkTableExtractor:
         for start, end in offsets:
             # Extract the sentence and limit its length
             sentence = text[start:end]
-            while len(sentence) > MAX_CONTEXT_SENTENCE_LENGTH:
-                chunks.append(sentence[:MAX_CONTEXT_SENTENCE_LENGTH])
-                sentence = sentence[MAX_CONTEXT_SENTENCE_LENGTH:]
+            while len(sentence) > self.max_context_sentence_length:
+                chunks.append(sentence[: self.max_context_sentence_length])
+                sentence = sentence[self.max_context_sentence_length :]
             else:
                 if is_question(sentence):
                     chunks.append(
                         "{} {}".format(
-                            sentence, text[end : end + MAX_CONTEXT_SENTENCE_LENGTH]
+                            sentence, text[end : end + self.max_context_sentence_length]
                         )
                     )
                 else:
@@ -374,6 +378,8 @@ class BatchRAGModel:
         sentence_model_name: str = "sentence-t5-large",
         use_table_info: bool = True,
         max_table_length: int = 2000,
+        num_context_sentences=NUM_CONTEXT_SENTENCES,
+        max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -393,6 +399,8 @@ class BatchRAGModel:
         self.sentence_model_name = sentence_model_name
         self.use_table_info = use_table_info
         self.max_table_length = max_table_length
+        self.num_context_sentences = num_context_sentences
+        self.max_context_sentence_length = max_context_sentence_length
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -401,9 +409,9 @@ class BatchRAGModel:
                 assert attr_name in ["domain", "question_type", "static_or_dynamic"]
             self.attr_predictor = AttrPredictor(attr_predictor_method, self.llm)
         if self.use_table_info:
-            self.chunk_extractor = ChunkTableExtractor()
+            self.chunk_extractor = ChunkTableExtractor(self.max_context_sentence_length)
         else:
-            self.chunk_extractor = ChunkExtractor()
+            self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
 
         # print all configs
         logger.info("Configs:")
@@ -596,7 +604,7 @@ class BatchRAGModel:
 
             # and retrieve top-N results.
             retrieval_results = relevant_chunks[
-                (-cosine_scores).argsort()[:NUM_CONTEXT_SENTENCES]
+                (-cosine_scores).argsort()[: self.num_context_sentences]
             ]
 
             # You might also choose to skip the steps above and

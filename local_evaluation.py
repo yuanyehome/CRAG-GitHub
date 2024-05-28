@@ -539,6 +539,8 @@ if __name__ == "__main__":
     parser.add_argument("--sentence_model_name", type=str, default="sentence-t5-large")
     parser.add_argument("--no_use_table_info", action="store_true")
     parser.add_argument("--max_table_length", type=int, default=2000)
+    parser.add_argument("--num_context_sentences", type=int, default=8)
+    parser.add_argument("--max_context_sentence_length", type=int, default=500)
     parser.add_argument(
         "--idk_attrs",
         type=str,
@@ -578,6 +580,8 @@ if __name__ == "__main__":
         use_table_info=not args.no_use_table_info,
         idk_attrs=args.idk_attrs,
         max_table_length=args.max_table_length,
+        num_context_sentences=args.num_context_sentences,
+        max_context_sentence_length=args.max_context_sentence_length,
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)
