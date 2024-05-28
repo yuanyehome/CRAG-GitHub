@@ -266,11 +266,11 @@ def generate_predictions(dataset_path, participant_model):
             f.write(f"{prompt_len}\n")
     with open(os.path.join(LOG_DIR, "all_prompts.txt"), "w") as f:
         for query, prompt in zip(queries, all_prompts):
-            f.write("=" * 50)
+            f.write("=" * 50 + "\n")
             f.write(f"Query:\n{query}\n")
-            f.write("*" * 50)
+            f.write("*" * 50 + "\n")
             f.write(f"Prompt:\n{prompt}\n")
-            f.write("=" * 50)
+            f.write("=" * 50 + "\n")
     return final_predictions
 
 
