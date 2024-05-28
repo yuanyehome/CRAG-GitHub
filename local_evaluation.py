@@ -538,10 +538,11 @@ if __name__ == "__main__":
     parser.add_argument("--vllm_gpu_memory_utilization", type=float, default=0.6)
     parser.add_argument("--sentence_model_name", type=str, default="sentence-t5-large")
     parser.add_argument("--no_use_table_info", action="store_true")
+    parser.add_argument("--max_table_length", type=int, default=2000)
     parser.add_argument(
         "--idk_attrs",
         type=str,
-        default='{"domain": ["finance"], "static_or_dynamic": ["dynamic"]}',
+        default='{"static_or_dynamic": ["dynamic"]}',
     )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)
@@ -576,6 +577,7 @@ if __name__ == "__main__":
         sentence_model_name=args.sentence_model_name,
         use_table_info=not args.no_use_table_info,
         idk_attrs=args.idk_attrs,
+        max_table_length=args.max_table_length,
     )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model)
