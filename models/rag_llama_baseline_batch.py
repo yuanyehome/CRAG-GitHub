@@ -634,7 +634,7 @@ class BatchRAGModel:
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
-            queries, query_times, batch_retrieval_results, tables
+            queries, query_times, batch_retrieval_results, batch_tables
         )
 
         # Generate responses via vllm
