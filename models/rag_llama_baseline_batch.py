@@ -320,7 +320,7 @@ class ChunkTableExtractor:
 
         # Flatten chunks and keep a map of corresponding interaction_ids
         chunks, chunk_interaction_ids = self._flatten_chunks(chunk_dictionary)
-        tables, table_interaction_ids = self._flatten_tables(table_dictionary)
+        tables, table_interaction_ids = self._flatten_chunks(table_dictionary)
 
         return chunks, tables, chunk_interaction_ids, table_interaction_ids
 
