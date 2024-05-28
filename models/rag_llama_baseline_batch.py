@@ -605,12 +605,20 @@ class BatchRAGModel:
         answers = [None for _ in queries]
         all_predicted_attrs = {}
         if self.idk_attrs:
+            idk_idxs = []
             for attr_name in self.idk_attrs.keys():
+                curr_idk_idxs = set()
                 predicted_attrs = self.attr_predictor.predict_attr(batch, attr_name)
                 all_predicted_attrs[attr_name] = predicted_attrs
                 for idx, pred_attr in enumerate(predicted_attrs):
                     if pred_attr in self.idk_attrs[attr_name]:
-                        answers[idx] = "I don't know."
+                        # answers[idx] = "I don't know."
+                        curr_idk_idxs.add(idx)
+                idk_idxs.append(curr_idk_idxs)
+            # get the intersection of idx_idxs
+            idk_idxs = set.intersection(*idk_idxs)
+            for idk_idx in idk_idxs:
+                answers[idk_idx] = "I don't know."
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
