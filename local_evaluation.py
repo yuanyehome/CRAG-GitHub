@@ -359,9 +359,9 @@ def evaluate_predictions(predictions, evaluation_model_name, openai_client: Open
         domain, ques_type = prediction_dict["domain"], prediction_dict["question_type"]
         static_or_dynamic = prediction_dict["static_or_dynamic"]
         # [ratio, correct, total]
-        correct_by_domain.setdefault(domain, [0, 0, 0])
-        correct_by_ques_type.setdefault(ques_type, [0, 0, 0])
-        correct_by_static_or_dynamic.setdefault(static_or_dynamic, [0, 0, 0])
+        correct_by_domain.setdefault(domain, [0, 0, 0, 0])
+        correct_by_ques_type.setdefault(ques_type, [0, 0, 0, 0])
+        correct_by_static_or_dynamic.setdefault(static_or_dynamic, [0, 0, 0, 0])
         correct_by_domain[domain][2] += 1
         correct_by_ques_type[ques_type][2] += 1
         correct_by_static_or_dynamic[static_or_dynamic][2] += 1
@@ -377,6 +377,9 @@ def evaluate_predictions(predictions, evaluation_model_name, openai_client: Open
         if "i don't know" in prediction.lower():
             n_miss += 1
             prediction_dict["eval_res"] = "miss"
+            correct_by_domain[domain][3] += 1
+            correct_by_ques_type[ques_type][3] += 1
+            correct_by_static_or_dynamic[static_or_dynamic][3] += 1
             continue
         if prediction.lower() == ground_truth.lower():
             n_correct_exact += 1
