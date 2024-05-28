@@ -427,16 +427,22 @@ def evaluate_predictions(predictions, evaluation_model_name, openai_client: Open
             json.dump(predictions, f, indent=2, ensure_ascii=False)
     n = len(predictions)
     assert curr_cnt == n
-    for domain, (_, d_correct, d_total) in correct_by_domain.items():
+    for domain, (_, d_correct, d_total, d_missing) in correct_by_domain.items():
         correct_by_domain[domain][0] = d_correct / d_total
-    for ques_type, (_, q_correct, q_total) in correct_by_ques_type.items():
+        correct_by_domain[domain].append(d_correct / (d_total - d_missing + 1e-6))
+    for ques_type, (_, q_correct, q_total, q_missing) in correct_by_ques_type.items():
         correct_by_ques_type[ques_type][0] = q_correct / q_total
+        correct_by_ques_type[ques_type].append(q_correct / (q_total - q_missing + 1e-6))
     for static_or_dynamic, (
         _,
         s_correct,
         s_total,
+        s_missing,
     ) in correct_by_static_or_dynamic.items():
         correct_by_static_or_dynamic[static_or_dynamic][0] = s_correct / s_total
+        correct_by_static_or_dynamic[static_or_dynamic].append(
+            s_correct / (s_total - s_missing + 1e-6)
+        )
     results = {
         "score": (2 * n_correct + n_miss) / n - 1,
         "exact_accuracy": n_correct_exact / n,
