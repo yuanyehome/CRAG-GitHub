@@ -581,6 +581,7 @@ class BatchRAGModel:
 
         # Retrieve top matches for the whole batch
         batch_retrieval_results = []
+        batch_tables = []
         for _idx, interaction_id in enumerate(batch_interaction_ids):
             query = queries[_idx]
             query_time = query_times[_idx]
@@ -591,6 +592,10 @@ class BatchRAGModel:
 
             # Filter out the said chunks and corresponding embeddings
             relevant_chunks = chunks[relevant_chunks_mask]
+            if len(tables) > 0:
+                relevant_tables = tables[relevant_chunks_mask]
+            else:
+                relevant_tables = []
             relevant_chunks_embeddings = chunk_embeddings[relevant_chunks_mask]
 
             # Calculate cosine similarity between query and chunk embeddings,
@@ -604,6 +609,7 @@ class BatchRAGModel:
             # You might also choose to skip the steps above and
             # use a vectorDB directly.
             batch_retrieval_results.append(retrieval_results)
+            batch_tables.append(relevant_tables)
 
         answers = [None for _ in queries]
         all_predicted_attrs = {}
@@ -672,8 +678,8 @@ class BatchRAGModel:
         self,
         queries,
         query_times,
-        batch_retrieval_results: list[str] = [],
-        tables: list[str] = [],
+        batch_retrieval_results: list[list[str]] = [],
+        batch_table_results: list[list[str]] = [],
     ):
         """
         Formats queries, corresponding query_times and retrieval results using the chat_template of the model.
@@ -690,6 +696,7 @@ class BatchRAGModel:
         for _idx, query in enumerate(queries):
             query_time = query_times[_idx]
             retrieval_results = batch_retrieval_results[_idx]
+            related_tables = batch_table_results[_idx]
 
             user_message = ""
             references = ""
@@ -700,10 +707,10 @@ class BatchRAGModel:
                     references += f"- {snippet.strip()}\n"
             user_message += f"{references}\n------\n\n"
 
-            if len(tables) > 0:
+            if len(related_tables) > 0:
                 table_references = ""
                 user_message += "## Table references \n"
-                for idx, table in enumerate(tables):
+                for idx, table in enumerate(related_tables):
                     table_references += f"### Table {idx + 1}: \n"
                     table_references += f"{table}\n"
                 table_references = table_references[: self.max_table_length]
