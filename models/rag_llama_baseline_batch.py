@@ -319,13 +319,12 @@ class ChunkTableExtractor:
             table_dictionary[interaction_id].extend(_tables)
 
         # Flatten chunks and keep a map of corresponding interaction_ids
-        chunks, tables, chunk_interaction_ids = self._flatten_chunks(
-            chunk_dictionary, table_dictionary
-        )
+        chunks, chunk_interaction_ids = self._flatten_chunks(chunk_dictionary)
+        tables, table_interaction_ids = self._flatten_tables(table_dictionary)
 
-        return chunks, tables, chunk_interaction_ids
+        return chunks, tables, chunk_interaction_ids, table_interaction_ids
 
-    def _flatten_chunks(self, chunk_dictionary, table_dictionary):
+    def _flatten_chunks(self, chunk_dictionary):
         """
         Flattens the chunk dictionary into separate lists for chunks and their corresponding interaction IDs.
 
@@ -336,7 +335,6 @@ class ChunkTableExtractor:
             Tuple[np.ndarray, np.ndarray]: A tuple containing an array of chunks and an array of corresponding interaction IDs.
         """
         chunks = []
-        tables = []
         chunk_interaction_ids = []
 
         for interaction_id, _chunks in chunk_dictionary.items():
@@ -345,16 +343,11 @@ class ChunkTableExtractor:
             chunks.extend(unique_chunks)
             chunk_interaction_ids.extend([interaction_id] * len(unique_chunks))
 
-            _tables = table_dictionary[interaction_id]
-            unique_tables = list(set(_tables))
-            tables.extend(unique_tables)
-
         # Convert to numpy arrays for convenient slicing/masking operations later
         chunks = np.array(chunks)
-        tables = np.array(tables)
         chunk_interaction_ids = np.array(chunk_interaction_ids)
 
-        return chunks, tables, chunk_interaction_ids
+        return chunks, chunk_interaction_ids
 
 
 class BatchRAGModel:
@@ -564,8 +557,10 @@ class BatchRAGModel:
 
         # Chunk all search results using ChunkExtractor
         if self.use_table_info:
-            chunks, tables, chunk_interaction_ids = self.chunk_extractor.extract_chunks(
-                batch_interaction_ids, batch_search_results
+            chunks, tables, chunk_interaction_ids, table_interaction_ids = (
+                self.chunk_extractor.extract_chunks(
+                    batch_interaction_ids, batch_search_results
+                )
             )
         else:
             chunks, chunk_interaction_ids = self.chunk_extractor.extract_chunks(
@@ -589,11 +584,12 @@ class BatchRAGModel:
 
             # Identify chunks that belong to this interaction_id
             relevant_chunks_mask = chunk_interaction_ids == interaction_id
+            relavant_tables_mask = table_interaction_ids == interaction_id
 
             # Filter out the said chunks and corresponding embeddings
             relevant_chunks = chunks[relevant_chunks_mask]
             if len(tables) > 0:
-                relevant_tables = tables[relevant_chunks_mask]
+                relevant_tables = tables[relavant_tables_mask]
             else:
                 relevant_tables = []
             relevant_chunks_embeddings = chunk_embeddings[relevant_chunks_mask]
