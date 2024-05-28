@@ -8,6 +8,7 @@ import torch
 import vllm
 import json
 import trafilatura
+from loguru import logger
 from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
@@ -405,8 +406,8 @@ class BatchRAGModel:
             self.chunk_extractor = ChunkExtractor()
 
         # print all configs
-        print("Configs:")
-        print(
+        logger.info("Configs:")
+        logger.info(
             json.dumps(
                 {
                     "self.batch_size": self.batch_size,
@@ -437,8 +438,8 @@ class BatchRAGModel:
             self.model_name = os.path.join(self.local_large_files_path, self.model_name)
         if self.custom_local_model_path is not None:
             self.model_name = self.custom_local_model_path
-        print(self.model_name)
-        print(self.quantization)
+        logger.info(self.model_name)
+        logger.info(self.quantization)
 
         if not os.path.exists(self.model_name):
             raise Exception(
@@ -473,14 +474,14 @@ class BatchRAGModel:
                 f"large-files/ckpts/sentence-transformers/{self.sentence_model_name}",
             )
         )
-        print("Sentence model path: {}".format(sentence_model_path))
+        logger.info("Sentence model path: {}".format(sentence_model_path))
         self.sentence_model = SentenceTransformer(
             sentence_model_path,
             device=torch.device("cpu"),
         )
         self.sentence_model = self.sentence_model.half().cuda(0)
-        print("After initializing models, GPU Memory info:")
-        os.system("nvidia-smi")
+        # print("After initializing models, GPU Memory info:")
+        # os.system("nvidia-smi")
 
     def calculate_embeddings(self, sentences):
         """
@@ -550,10 +551,6 @@ class BatchRAGModel:
         queries = batch["query"]
         batch_search_results = batch["search_results"]
         query_times = batch["query_time"]
-        # print(len(batch_interaction_ids))
-        # print(len(queries))
-        # print(len(batch_search_results))
-        # print(len(query_times))
 
         # Chunk all search results using ChunkExtractor
         if self.use_table_info:
