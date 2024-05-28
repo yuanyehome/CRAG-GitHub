@@ -153,6 +153,7 @@ def generate_predictions(dataset_path, participant_model):
     domains, question_types, static_or_dynamics = [], [], []
     batch_size = participant_model.get_batch_size()
     all_prompt_lens: list[int] = []
+    all_prompts: list[str] = []
 
     dataset_items = []
     if not args.use_public_test:
@@ -202,6 +203,8 @@ def generate_predictions(dataset_path, participant_model):
             # logger.debug(len(all_predicted_attrs))
         if "prompt_lens" in batch_additional_info:
             all_prompt_lens.extend(batch_additional_info["prompt_lens"])
+        if "prompts" in batch_additional_info:
+            all_prompts.extend(batch_additional_info["prompts"])
         queries.extend(batch["query"])
         domains.extend(batch["domain"])
         question_types.extend(batch["question_type"])
@@ -222,6 +225,8 @@ def generate_predictions(dataset_path, participant_model):
             len(all_predicted_attrs),
             len(queries),
         )
+    if len(all_prompts) > 0:
+        assert len(all_prompts) == len(queries), (len(all_prompts), len(queries))
     for idx in range(len(all_predicted_attrs)):
         with open(os.path.join(LOG_DIR, "all_predicted_attrs.jsonl"), "w") as f:
             f.write(json.dumps(all_predicted_attrs[idx]) + "\n")
@@ -259,6 +264,13 @@ def generate_predictions(dataset_path, participant_model):
     with open(os.path.join(LOG_DIR, "all_prompt_lens.txt"), "w") as f:
         for prompt_len in all_prompt_lens:
             f.write(f"{prompt_len}\n")
+    with open(os.path.join(LOG_DIR, "all_prompts.txt"), "w") as f:
+        for query, prompt in zip(queries, all_prompts):
+            f.write("=" * 50)
+            f.write(f"Query:\n{query}\n")
+            f.write("*" * 50)
+            f.write(f"Prompt:\n{prompt}\n")
+            f.write("=" * 50)
     return final_predictions
 
 

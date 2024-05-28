@@ -16,8 +16,8 @@ from transformers import AutoTokenizer
 from models.attr_predictor import AttrPredictor
 from models.utils_html import get_tables, clean_html
 
-os.system("pip list")
-os.system("nvidia-smi")
+# os.system("pip list")
+# os.system("nvidia-smi")
 
 ######################################################################################################
 ######################################################################################################
@@ -663,6 +663,7 @@ class BatchRAGModel:
             return answers, {
                 "all_predicted_attrs": all_predicted_attrs,
                 "prompt_lens": prompt_lens,
+                "prompts": formatted_prompts,
             }
         else:
             return answers
