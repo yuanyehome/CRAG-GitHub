@@ -374,6 +374,7 @@ class BatchRAGModel:
         quantization=None,
         vllm_gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
         idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
+        attr_combine_method="union",
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
@@ -392,6 +393,8 @@ class BatchRAGModel:
             self.quantization = "gptq"
         assert self.model_size in ["8B", "70B"]
         self.idk_attrs = idk_attrs
+        self.attr_combine_method = attr_combine_method
+        assert self.attr_combine_method in ["union", "intersection"]
         self.return_additional_info = return_additional_info
         self.sentence_model_name = sentence_model_name
         self.use_table_info = use_table_info
@@ -616,7 +619,10 @@ class BatchRAGModel:
                         curr_idk_idxs.add(idx)
                 idk_idxs.append(curr_idk_idxs)
             # get the intersection of idx_idxs
-            idk_idxs = set.intersection(*idk_idxs)
+            if self.attr_combine_method == "union":
+                idk_idxs = set.union(*idk_idxs)
+            else:
+                idk_idxs = set.intersection(*idk_idxs)
             for idk_idx in idk_idxs:
                 answers[idk_idx] = "I don't know."
 
