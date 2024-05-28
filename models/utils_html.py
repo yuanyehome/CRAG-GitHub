@@ -52,6 +52,20 @@ def get_content(soup):
     return content
 
 
+def check_empty_table(table_str: str) -> bool:
+    table_str = (
+        table_str.replace("|", "")
+        .replace("-", "")
+        .replace(" ", "")
+        .replace("\n", "")
+        .strip()
+    )
+    table_str = "".join(table_str.split())
+    if table_str == "":
+        return True
+    return False
+
+
 def get_tables(soup) -> list[str]:
     markdown_tables = []
 
@@ -75,5 +89,8 @@ def get_tables(soup) -> list[str]:
                 + " |"
             )
             markdown_table.insert(1, header_sep)
-        markdown_tables.append("\n".join(markdown_table))
+        markdown_table_str = "\n".join(markdown_table)
+        if check_empty_table(markdown_table_str):
+            continue
+        markdown_tables.append(markdown_table_str)
     return markdown_tables  # don't combine'\n\n'.join(markdown_tables)

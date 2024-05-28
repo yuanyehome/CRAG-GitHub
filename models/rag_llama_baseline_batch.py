@@ -380,6 +380,7 @@ class BatchRAGModel:
         max_table_length: int = 2000,
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
+        log_while_inference=True,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -401,6 +402,7 @@ class BatchRAGModel:
         self.max_table_length = max_table_length
         self.num_context_sentences = num_context_sentences
         self.max_context_sentence_length = max_context_sentence_length
+        self.log_while_inference = log_while_inference
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -666,6 +668,15 @@ class BatchRAGModel:
                 ret_answer = "I don't know."
             if answers[idx] is None:
                 answers[idx] = ret_answer
+
+        if self.log_while_inference:
+            logger.info("Batch queries:")
+            logger.info(json.dumps(queries, indent=2))
+            logger.info("Batch answers:")
+            logger.info(json.dumps(answers, indent=2))
+            logger.info(f"Prompt lengths: {prompt_lens}")
+            logger.info("Predicted attributes:")
+            logger.info(json.dumps(all_predicted_attrs, indent=2))
 
         if self.return_additional_info:
             return answers, {

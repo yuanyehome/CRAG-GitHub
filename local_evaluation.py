@@ -138,7 +138,7 @@ def load_data_in_batches(dataset_items, batch_size):
         yield batch
 
 
-def generate_predictions(dataset_path, participant_model):
+def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
     """
     Processes batches of data from a dataset to generate predictions using a model.
 
@@ -169,6 +169,8 @@ def generate_predictions(dataset_path, participant_model):
                 curr_data = json.loads(line)
                 if curr_data["split"] == 1 and random.random() < args.test_ratio:
                     dataset_items.append(curr_data)
+    if case_idxs:
+        dataset_items = [dataset_items[idx] for idx in case_idxs]
     batch_num = math.ceil(len(dataset_items) / batch_size)
     logger.info(f"Number of data items: {len(dataset_items)}")
     logger.info(f"Batch size: {batch_size}")
@@ -271,6 +273,9 @@ def generate_predictions(dataset_path, participant_model):
             f.write("*" * 50 + "\n")
             f.write(f"Prompt:\n{prompt}\n")
             f.write("=" * 50 + "\n")
+
+    for idx, prediction in enumerate(final_predictions):
+        prediction["idx"] = idx
     return final_predictions
 
 
@@ -541,6 +546,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_table_length", type=int, default=2000)
     parser.add_argument("--num_context_sentences", type=int, default=8)
     parser.add_argument("--max_context_sentence_length", type=int, default=500)
+    parser.add_argument("--case_idxs", type=int, nargs="+")
     parser.add_argument(
         "--idk_attrs",
         type=str,
@@ -582,9 +588,10 @@ if __name__ == "__main__":
         max_table_length=args.max_table_length,
         num_context_sentences=args.num_context_sentences,
         max_context_sentence_length=args.max_context_sentence_length,
+        log_while_inference=False,
     )
     logger.info(f"Using model: {participant_model}")
-    predictions = generate_predictions(DATASET_PATH, participant_model)
+    predictions = generate_predictions(DATASET_PATH, participant_model, args.case_idxs)
     evaluate_attr_predictions(predictions)
 
     evaluation_results = evaluate_predictions(
