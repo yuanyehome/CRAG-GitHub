@@ -584,11 +584,11 @@ class BatchRAGModel:
 
             # Identify chunks that belong to this interaction_id
             relevant_chunks_mask = chunk_interaction_ids == interaction_id
-            relavant_tables_mask = table_interaction_ids == interaction_id
 
             # Filter out the said chunks and corresponding embeddings
             relevant_chunks = chunks[relevant_chunks_mask]
             if len(tables) > 0:
+                relavant_tables_mask = table_interaction_ids == interaction_id
                 relevant_tables = tables[relavant_tables_mask]
             else:
                 relevant_tables = []
