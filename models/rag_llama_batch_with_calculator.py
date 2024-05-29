@@ -498,7 +498,7 @@ class BatchRAGModelWithCalculator:
         max_table_length: int = 6000,
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
-        log_while_inference=True,
+        log_while_inference=False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
