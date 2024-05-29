@@ -8,11 +8,12 @@ import torch
 import vllm
 import json
 import trafilatura
+import torch.nn.functional as F
 from loguru import logger
 from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModel
 from models.attr_predictor import AttrPredictor
 from models.utils_html import get_tables, clean_html
 
@@ -473,6 +474,49 @@ class CalcAgent:
         return generated_expressions
 
 
+class SentenceEmbeddingModel:
+    def __init__(self, model_path: str, max_length: int):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = AutoModel.from_pretrained(model_path, trust_remote_code=True)
+        self.model = self.model.half().cuda()
+        self.max_length = max_length
+
+    @torch.inference_mode()
+    @torch.autocast(device_type="cuda", dtype=torch.float16)
+    def encode(self, sentences: List[str], normalize_embeddings: bool, batch_size: int):
+        all_embeddings = []
+        while len(sentences) > batch_size:
+            curr_batch = sentences[:batch_size]
+            sentences = sentences[batch_size:]
+            batch_dict = self.tokenizer(
+                curr_batch,
+                max_length=self.max_length,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+            ).to("cuda")
+            outputs = self.model(**batch_dict)
+            embeddings = outputs.last_hidden_state[:, 0]
+            if normalize_embeddings:
+                embeddings = F.normalize(embeddings, p=2, dim=1)
+            all_embeddings.append(embeddings)
+        else:
+            batch_dict = self.tokenizer(
+                sentences,
+                max_length=self.max_length,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+            ).to("cuda")
+            outputs = self.model(**batch_dict)
+            embeddings = outputs.last_hidden_state[:, 0]
+            if normalize_embeddings:
+                embeddings = F.normalize(embeddings, p=2, dim=1)
+            all_embeddings.append(embeddings)
+        embeddings = torch.cat(all_embeddings, dim=0).cpu().detach().numpy()
+        return embeddings
+
+
 class BatchRAGModelWithCalculator:
     """
     An example RAGModel for the KDDCup 2024 Meta CRAG Challenge
@@ -605,13 +649,9 @@ class BatchRAGModelWithCalculator:
             )
         )
         logger.info("Sentence model path: {}".format(sentence_model_path))
-        self.sentence_model = SentenceTransformer(
-            sentence_model_path,
-            device=torch.device("cpu"),
+        self.custom_sentence_model = SentenceEmbeddingModel(
+            sentence_model_path, max_length=self.max_context_sentence_length
         )
-        self.sentence_model = self.sentence_model.half().cuda(0)
-        # print("After initializing models, GPU Memory info:")
-        # os.system("nvidia-smi")
 
     def calculate_embeddings(self, sentences):
         """
@@ -627,7 +667,7 @@ class BatchRAGModelWithCalculator:
             np.ndarray: An array of normalized embeddings for the given sentences.
 
         """
-        embeddings = self.sentence_model.encode(
+        embeddings = self.custom_sentence_model.encode(
             sentences=sentences,
             normalize_embeddings=True,
             batch_size=self.sentence_transformer_bsz,
