@@ -22,6 +22,7 @@ from transformers import (
     PreTrainedTokenizer,
     PreTrainedTokenizerFast,
 )
+from loguru import logger
 
 
 def format_prompt(
@@ -207,11 +208,19 @@ def predict_static_or_dynamic(
 
 
 def get_few_shots(dataset_items: list, num_shots: int, key: str):
+    few_shots = []
+    few_shots_file_path = f"models/few-shots/{key}-few-shots.jsonl"
+    if os.path.exists(few_shots_file_path):
+        logger.info(f"Found saved few shots in {few_shots_file_path}")
+        with open(few_shots_file_path, "r") as f:
+            for line in f:
+                few_shots.append(json.loads(line))
+        return few_shots
+    logger.info(f"No such file: {few_shots_file_path}, generating few shots...")
     all_labels_items = {}
     for item in dataset_items:
         all_labels_items.setdefault(item[key], [])
         all_labels_items[item[key]].append(item)
-    few_shots = []
     for label in all_labels_items:
         few_shots.extend(random.sample(all_labels_items[label], num_shots))
     random.shuffle(few_shots)
@@ -219,7 +228,7 @@ def get_few_shots(dataset_items: list, num_shots: int, key: str):
 
 
 class AttrPredictor:
-    def __init__(self, method: str, vllm_model: vllm.LLM = None, seed: int = 20000317):
+    def __init__(self, method: str, vllm_model: vllm.LLM = None):
         assert method in ["svm", "few-shot"]
         if method == "svm":
             raise NotImplementedError
@@ -260,19 +269,25 @@ class AttrPredictor:
                     self.public_test_dataset_items.append(curr_data)
                 else:
                     self.valid_dataset_items.append(curr_data)
-        random.seed(seed)
+
+        self.question_type_few_shots = get_few_shots(
+            self.valid_dataset_items, 5, "question_type"
+        )
+        self.static_dynamic_few_shots = get_few_shots(
+            self.valid_dataset_items, 10, "static_or_dynamic"
+        )
 
     def predict_attr(self, batch: list, attr_name: str) -> list[str]:
         assert attr_name in ["domain", "question_type", "static_or_dynamic"]
         if attr_name == "domain":
             return predict_domain(self.vllm_model, batch)
         elif attr_name == "question_type":
-            few_shots = get_few_shots(self.valid_dataset_items, 5, "question_type")
-            return predict_question_type(self.vllm_model, batch, few_shots=few_shots)
+            return predict_question_type(
+                self.vllm_model, batch, few_shots=self.question_type_few_shots
+            )
         elif attr_name == "static_or_dynamic":
-            few_shots = get_few_shots(self.valid_dataset_items, 10, "static_or_dynamic")
             return predict_static_or_dynamic(
-                self.vllm_model, batch, few_shots=few_shots
+                self.vllm_model, batch, few_shots=self.static_dynamic_few_shots
             )
         else:
             raise NotImplementedError

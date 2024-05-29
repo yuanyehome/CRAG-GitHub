@@ -530,6 +530,12 @@ def setup_seed(seed):
     return seed
 
 
+def save_few_shots(few_shots, key):
+    with open(os.path.join(LOG_DIR, f"{key}_few_shots.jsonl"), "w") as f:
+        for shot in few_shots:
+            f.write(json.dumps(shot) + "\n")
+
+
 if __name__ == "__main__":
     from models.user_config import UserModel
 
@@ -558,6 +564,9 @@ if __name__ == "__main__":
         LOG_DIR = args.log_dir
         os.makedirs(LOG_DIR, exist_ok=True)
         logger.add(os.path.join(LOG_DIR, "main_script.log"), level="DEBUG", mode="w")
+        os.system(
+            "git rev-parse HEAD > {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
+        )
     logger.info(json.dumps(vars(args), indent=2))
     setup_seed(args.seed)
     if args.use_public_test:
@@ -590,6 +599,14 @@ if __name__ == "__main__":
         max_context_sentence_length=args.max_context_sentence_length,
         log_while_inference=False,
     )
+    if participant_model.attr_predictor is not None:
+        save_few_shots(
+            participant_model.attr_predictor.question_type_few_shots, "question_type"
+        )
+        save_few_shots(
+            participant_model.attr_predictor.static_or_dynamic_few_shots,
+            "static_or_dynamic",
+        )
     logger.info(f"Using model: {participant_model}")
     predictions = generate_predictions(DATASET_PATH, participant_model, args.case_idxs)
     evaluate_attr_predictions(predictions)
