@@ -476,44 +476,45 @@ class CalcAgent:
 
 class SentenceEmbeddingModel:
     def __init__(self, model_path: str, max_length: int):
+        self.device = torch.device("cuda:0")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModel.from_pretrained(model_path, trust_remote_code=True)
-        self.model = self.model.half().cuda()
+        self.model = self.model.half().to(self.device)
         self.max_length = max_length
 
     @torch.inference_mode()
-    @torch.autocast(device_type="cuda", dtype=torch.float16)
-    def encode(self, sentences: List[str], normalize_embeddings: bool, batch_size: int):
-        all_embeddings = []
-        while len(sentences) > batch_size:
-            curr_batch = sentences[:batch_size]
-            sentences = sentences[batch_size:]
-            batch_dict = self.tokenizer(
-                curr_batch,
-                max_length=self.max_length,
-                padding=True,
-                truncation=True,
-                return_tensors="pt",
-            ).to("cuda")
-            outputs = self.model(**batch_dict)
-            embeddings = outputs.last_hidden_state[:, 0]
-            if normalize_embeddings:
-                embeddings = F.normalize(embeddings, p=2, dim=1)
-            all_embeddings.append(embeddings)
-        else:
-            batch_dict = self.tokenizer(
-                sentences,
-                max_length=self.max_length,
-                padding=True,
-                truncation=True,
-                return_tensors="pt",
-            ).to("cuda")
-            outputs = self.model(**batch_dict)
-            embeddings = outputs.last_hidden_state[:, 0]
-            if normalize_embeddings:
-                embeddings = F.normalize(embeddings, p=2, dim=1)
-            all_embeddings.append(embeddings)
-        embeddings = torch.cat(all_embeddings, dim=0).cpu().detach().numpy()
+    def encode(self, sentences: list[str], normalize_embeddings: bool, batch_size: int):
+        with torch.autocast(device_type=self.device.type, dtype=torch.float16):
+            all_embeddings = []
+            while len(sentences) > batch_size:
+                curr_batch = sentences[:batch_size]
+                sentences = sentences[batch_size:]
+                batch_dict = self.tokenizer(
+                    curr_batch,
+                    max_length=self.max_length,
+                    padding=True,
+                    truncation=True,
+                    return_tensors="pt",
+                ).to(self.device)
+                outputs = self.model(**batch_dict)
+                embeddings = outputs.last_hidden_state[:, 0]
+                if normalize_embeddings:
+                    embeddings = F.normalize(embeddings, p=2, dim=1)
+                all_embeddings.append(embeddings)
+            else:
+                batch_dict = self.tokenizer(
+                    sentences,
+                    max_length=self.max_length,
+                    padding=True,
+                    truncation=True,
+                    return_tensors="pt",
+                ).to(self.device)
+                outputs = self.model(**batch_dict)
+                embeddings = outputs.last_hidden_state[:, 0]
+                if normalize_embeddings:
+                    embeddings = F.normalize(embeddings, p=2, dim=1)
+                all_embeddings.append(embeddings)
+            embeddings = torch.cat(all_embeddings, dim=0).cpu().detach().numpy()
         return embeddings
 
 
@@ -667,6 +668,8 @@ class BatchRAGModelWithCalculator:
             np.ndarray: An array of normalized embeddings for the given sentences.
 
         """
+        if isinstance(sentences, np.ndarray):
+            sentences = sentences.tolist()
         embeddings = self.custom_sentence_model.encode(
             sentences=sentences,
             normalize_embeddings=True,
