@@ -448,17 +448,27 @@ class CalcAgent:
                 if curr_expression in curr_expressions:
                     continue
                 try:
-                    exec_result = str(eval(curr_expression))
+                    exec_result = eval(curr_expression)
+                    if type(exec_result) in [list, set, dict]:
+                        raise Exception(
+                            "Expression should not return a list, set or dict"
+                        )
+                    exec_result = str(exec_result)
                     curr_expressions.append(curr_expression)
                     curr_results.append(exec_result)
                 except:
                     exec_result = None
             curr_generated_expressions = []
             for exp, res in zip(curr_expressions, curr_results):
-                # logger.info(f"\n\tExpression: {exp}\n\tResult: {res}")
+                # logger.debug(f"Expression: {exp}, Result: {res}")
+                if res == "":
+                    continue
+                if repr(res) == exp.replace('"', "'"):
+                    continue
                 curr_generated_expressions.append(
                     json.dumps({"Expression": exp, "Result": res})
                 )
+            # logger.debug(f"Generated expressions: {curr_generated_expressions}")
             generated_expressions.append(curr_generated_expressions)
         return generated_expressions
 
@@ -848,7 +858,7 @@ class BatchRAGModelWithCalculator:
                     table_references += f"{table}\n"
                 table_references = table_references[: self.max_table_length]
                 user_message += f"{table_references}\n------\n\n"
-            
+
             if len(generated_expressions) > 0:
                 expression_references = ""
                 user_message += "## Possible useful calculation results \n"
