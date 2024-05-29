@@ -9,8 +9,9 @@ def clean_html(webpage):
         script.decompose()  # Remove these tags
 
     # 查找并删除所有 <a> 标签。删除网页链接
-    for link in soup.find_all("a"):
-        link.decompose()  # decompose 方法会从文档树中移除该元素
+    # Update: 有时候 <a> 标签是带有信息的，暂时不删除
+    # for link in soup.find_all("a"):
+    #     link.decompose()  # decompose 方法会从文档树中移除该元素
 
     # 删除页眉
     # for header in soup.find_all(['header', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
@@ -66,7 +67,7 @@ def check_empty_table(table_str: str) -> bool:
     return False
 
 
-def get_tables(soup) -> list[str]:
+def get_tables(soup, html_name: str) -> list[str]:
     markdown_tables = []
 
     # Find all table tags
@@ -92,5 +93,6 @@ def get_tables(soup) -> list[str]:
         markdown_table_str = "\n".join(markdown_table)
         if check_empty_table(markdown_table_str):
             continue
+        markdown_table_str = f"Page name: {html_name}\n{markdown_table_str}"
         markdown_tables.append(markdown_table_str)
-    return markdown_tables  # don't combine'\n\n'.join(markdown_tables)
+    return markdown_tables

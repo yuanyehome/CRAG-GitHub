@@ -231,7 +231,7 @@ class ChunkTableExtractor:
         self.max_context_sentence_length = max_context_sentence_length
 
     @ray.remote
-    def _extract_chunks(self, interaction_id, html_source, html_snippet):
+    def _extract_chunks(self, interaction_id, html_source, html_snippet, html_name):
         """
         Extracts and returns chunks from given HTML source.
 
@@ -284,7 +284,7 @@ class ChunkTableExtractor:
                 else:
                     chunks.append(sentence)
 
-        tables = get_tables(clean_html(html_source))
+        tables = get_tables(clean_html(html_source), html_name)
 
         return interaction_id, chunks, tables
 
@@ -306,6 +306,7 @@ class ChunkTableExtractor:
                 interaction_id=batch_interaction_ids[idx],
                 html_source=html_text["page_result"],
                 html_snippet=html_text["page_snippet"],
+                html_name=html_text["page_name"],
             )
             for idx, search_results in enumerate(batch_search_results)
             for html_text in search_results
