@@ -567,6 +567,9 @@ if __name__ == "__main__":
         os.system(
             "git rev-parse HEAD > {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
         )
+        os.system(
+            "git status >> {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
+        )
     logger.info(json.dumps(vars(args), indent=2))
     setup_seed(args.seed)
     if args.use_public_test:
@@ -604,7 +607,7 @@ if __name__ == "__main__":
             participant_model.attr_predictor.question_type_few_shots, "question_type"
         )
         save_few_shots(
-            participant_model.attr_predictor.static_or_dynamic_few_shots,
+            participant_model.attr_predictor.static_dynamic_few_shots,
             "static_or_dynamic",
         )
     logger.info(f"Using model: {participant_model}")
