@@ -441,20 +441,21 @@ class CalcAgent:
         )
         generated_expressions = []
         for response in generated_expression_responses:
-            curr_expressions = []
-            curr_results = []
+            curr_expressions: list[str] = []
+            curr_results: list[str] = []
             for _idx, response in enumerate(generated_expression_responses):
                 curr_expression = response.outputs[_idx].text.strip().rstrip()
                 if curr_expression in curr_expressions:
                     continue
                 try:
-                    exec_result = eval(curr_expression)
+                    exec_result = str(eval(curr_expression))
                     curr_expressions.append(curr_expression)
                     curr_results.append(exec_result)
                 except:
                     exec_result = None
             curr_generated_expressions = []
             for exp, res in zip(curr_expressions, curr_results):
+                # logger.info(f"\n\tExpression: {exp}\n\tResult: {res}")
                 curr_generated_expressions.append(
                     json.dumps({"Expression": exp, "Result": res})
                 )
