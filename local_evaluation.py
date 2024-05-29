@@ -543,8 +543,8 @@ if __name__ == "__main__":
     parser.add_argument("--vllm_gpu_memory_utilization", type=float, default=0.6)
     parser.add_argument("--sentence_model_name", type=str, default="sentence-t5-large")
     parser.add_argument("--no_use_table_info", action="store_true")
-    parser.add_argument("--max_table_length", type=int, default=2000)
-    parser.add_argument("--num_context_sentences", type=int, default=8)
+    parser.add_argument("--max_table_length", type=int, default=6000)
+    parser.add_argument("--num_context_sentences", type=int, default=16)
     parser.add_argument("--max_context_sentence_length", type=int, default=500)
     parser.add_argument("--case_idxs", type=int, nargs="+")
     parser.add_argument(

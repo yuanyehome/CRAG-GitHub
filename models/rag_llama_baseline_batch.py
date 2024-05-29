@@ -51,7 +51,7 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 #### CONFIG PARAMETERS ---
 
 # Define the number of context sentences to consider for generating an answer.
-NUM_CONTEXT_SENTENCES = 8
+NUM_CONTEXT_SENTENCES = 16
 # Set the maximum length for each context sentence (in characters).
 MAX_CONTEXT_SENTENCE_LENGTH = 500
 
@@ -378,7 +378,7 @@ class BatchRAGModel:
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
         use_table_info: bool = True,
-        max_table_length: int = 2000,
+        max_table_length: int = 6000,
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=True,
