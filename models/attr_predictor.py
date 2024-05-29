@@ -60,7 +60,7 @@ def predict_domain(llm: vllm.LLM, batch, sample_num: int = 5):
         vllm.SamplingParams(
             n=sample_num,  # Number of output sequences to return for each prompt.
             top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
-            temperature=1.0,  # Randomness of the sampling
+            temperature=0.1,  # Randomness of the sampling
             skip_special_tokens=True,  # Whether to skip special tokens in the output.
             max_tokens=10,  # Maximum number of tokens to generate per output sequence.
         ),
@@ -116,7 +116,7 @@ def predict_question_type(
         vllm.SamplingParams(
             n=sample_num,  # Number of output sequences to return for each prompt.
             top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
-            temperature=1.0,  # Randomness of the sampling
+            temperature=0.1,  # Randomness of the sampling
             skip_special_tokens=True,  # Whether to skip special tokens in the output.
             max_tokens=10,  # Maximum number of tokens to generate per output sequence.
         ),
@@ -172,7 +172,7 @@ def predict_static_or_dynamic(
         vllm.SamplingParams(
             n=sample_num,  # Number of output sequences to return for each prompt.
             top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
-            temperature=1.0,  # Randomness of the sampling
+            temperature=0.1,  # Randomness of the sampling
             skip_special_tokens=True,  # Whether to skip special tokens in the output.
             max_tokens=10,  # Maximum number of tokens to generate per output sequence.
         ),
