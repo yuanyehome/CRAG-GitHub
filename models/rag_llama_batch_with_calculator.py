@@ -474,7 +474,7 @@ class CalcAgent:
         return generated_expressions
 
 
-class SentenceEmbeddingModel:
+class CustomSentenceEmbeddingModel:
     def __init__(self, model_path: str, max_length: int):
         self.device = torch.device("cuda:0")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -483,7 +483,15 @@ class SentenceEmbeddingModel:
         self.max_length = max_length
 
     @torch.inference_mode()
-    def encode(self, sentences: list[str], normalize_embeddings: bool, batch_size: int):
+    def encode(
+        self,
+        sentences: list[str],
+        normalize_embeddings: bool,
+        batch_size: int,
+        prompt: str = None,
+    ):
+        if prompt:
+            sentences = [f"{prompt}{sentence}" for sentence in sentences]
         with torch.autocast(device_type=self.device.type, dtype=torch.float16):
             all_embeddings = []
             while len(sentences) > batch_size:
@@ -544,6 +552,7 @@ class BatchRAGModelWithCalculator:
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
+        custom_sentence_embedding=False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -566,6 +575,7 @@ class BatchRAGModelWithCalculator:
         self.num_context_sentences = num_context_sentences
         self.max_context_sentence_length = max_context_sentence_length
         self.log_while_inference = log_while_inference
+        self.custom_sentence_embedding = custom_sentence_embedding
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -598,6 +608,10 @@ class BatchRAGModelWithCalculator:
                     "self.sentence_model_name": self.sentence_model_name,
                     "self.use_table_info": self.use_table_info,
                     "self.max_table_length": self.max_table_length,
+                    "self.num_context_sentences": self.num_context_sentences,
+                    "self.max_context_sentence_length": self.max_context_sentence_length,
+                    "self.log_while_inference": self.log_while_inference,
+                    "self.custom_sentence_embedding": self.custom_sentence_embedding,
                 },
                 indent=2,
             )
@@ -650,11 +664,14 @@ class BatchRAGModelWithCalculator:
             )
         )
         logger.info("Sentence model path: {}".format(sentence_model_path))
-        self.custom_sentence_model = SentenceEmbeddingModel(
-            sentence_model_path, max_length=self.max_context_sentence_length
-        )
+        if self.custom_sentence_embedding:
+            self.sentence_model = CustomSentenceEmbeddingModel(
+                sentence_model_path, max_length=self.max_context_sentence_length
+            )
+        else:
+            self.sentence_model = SentenceTransformer(sentence_model_path)
 
-    def calculate_embeddings(self, sentences):
+    def calculate_embeddings(self, sentences, prompt: str = None):
         """
         Compute normalized embeddings for a list of sentences using a sentence encoding model.
 
@@ -670,10 +687,11 @@ class BatchRAGModelWithCalculator:
         """
         if isinstance(sentences, np.ndarray):
             sentences = sentences.tolist()
-        embeddings = self.custom_sentence_model.encode(
+        embeddings = self.sentence_model.encode(
             sentences=sentences,
             normalize_embeddings=True,
             batch_size=self.sentence_transformer_bsz,
+            prompt=prompt,
         )
         # Note: There is an opportunity to parallelize the embedding generation across 4 GPUs
         #       but sentence_model.encode_multi_process seems to interefere with Ray
@@ -742,7 +760,10 @@ class BatchRAGModelWithCalculator:
         chunk_embeddings = self.calculate_embeddings(chunks)
 
         # Calculate embeddings for queries
-        query_embeddings = self.calculate_embeddings(queries)
+        query_embeddings = self.calculate_embeddings(
+            queries,
+            prompt="Generate sentence representations for searching relative passages: ",
+        )
 
         # Retrieve top matches for the whole batch
         batch_retrieval_results = []
