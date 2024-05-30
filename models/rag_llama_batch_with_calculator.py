@@ -553,7 +553,7 @@ class BatchRAGModelWithCalculator:
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
         custom_sentence_embedding=False,
-        query_prompt=None,
+        query_prompt="Generate sentence representations for searching relative passages: ",
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -672,7 +672,8 @@ class BatchRAGModelWithCalculator:
                 sentence_model_path, max_length=self.max_context_sentence_length
             )
         else:
-            self.sentence_model = SentenceTransformer(sentence_model_path)
+            self.sentence_model = SentenceTransformer(sentence_model_path, device=torch.device("cpu"))
+            self.sentence_model = self.sentence_model.half().cuda(0)
 
     def calculate_embeddings(self, sentences, prompt: str = None):
         """
