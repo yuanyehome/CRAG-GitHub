@@ -570,6 +570,9 @@ if __name__ == "__main__":
         os.system(
             "git status >> {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
         )
+        os.system(
+            "git diff >> {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
+        )
     logger.info(json.dumps(vars(args), indent=2))
     setup_seed(args.seed)
     if args.use_public_test:
