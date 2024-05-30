@@ -476,6 +476,8 @@ class CalcAgent:
                     continue
                 if repr(res) == exp.replace('"', "'"):
                     continue
+                if res == exp:
+                    continue
                 curr_generated_expressions.append(
                     json.dumps({"Expression": exp, "Result": res})
                 )
