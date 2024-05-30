@@ -862,6 +862,10 @@ class BatchRAGModelWithCalculator:
             prompt_lens.append(len(response.prompt_token_ids))
             if ret_answer == "":
                 ret_answer = "I don't know."
+            if "i don't know" in ret_answer.lower():
+                ret_answer = "I don't know."
+            if "i do not know" in ret_answer.lower():
+                ret_answer = "I don't know."
             if answers[idx] is None:
                 answers[idx] = ret_answer
 
