@@ -66,6 +66,11 @@ VLLM_GPU_MEMORY_UTILIZATION = 0.9  # TUNE THIS VARIABLE depending on the number 
 # Sentence Transformer Parameters
 SENTENTENCE_TRANSFORMER_BATCH_SIZE = 32  # TUNE THIS VARIABLE depending on the size of your embedding model and GPU mem available
 
+# ---- Query prompt before calculating query embeddings
+# ---- Need further investigation to see if this is useful
+# QUERY_PROMPT = "Generate sentence representations for searching relative passages: "
+QUERY_PROMPT = ""
+
 #### CONFIG PARAMETERS END---
 
 
@@ -567,7 +572,7 @@ class BatchRAGModelWithCalculator:
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
         custom_sentence_embedding=False,
-        query_prompt="Generate sentence representations for searching relative passages: ",
+        query_prompt=QUERY_PROMPT,
         include_table_in_text=False,
     ):
         self.batch_size = batch_size

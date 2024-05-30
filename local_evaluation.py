@@ -562,7 +562,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--query_prompt",
         type=str,
-        default="Generate sentence representations for searching relative passages: ",
+        default="",
     )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)
