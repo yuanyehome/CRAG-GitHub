@@ -674,7 +674,9 @@ class BatchRAGModelWithCalculator:
                 sentence_model_path, max_length=self.max_context_sentence_length
             )
         else:
-            self.sentence_model = SentenceTransformer(sentence_model_path, device=torch.device("cpu"))
+            self.sentence_model = SentenceTransformer(
+                sentence_model_path, device=torch.device("cpu"), trust_remote_code=True
+            )
             self.sentence_model = self.sentence_model.half().cuda(0)
 
     def calculate_embeddings(self, sentences, prompt: str = None):
