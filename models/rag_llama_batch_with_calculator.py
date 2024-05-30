@@ -490,6 +490,8 @@ class CustomSentenceEmbeddingModel:
         batch_size: int,
         prompt: str = None,
     ):
+        if isinstance(sentences, np.ndarray):
+            sentences = sentences.tolist()
         if prompt:
             sentences = [f"{prompt}{sentence}" for sentence in sentences]
         with torch.autocast(device_type=self.device.type, dtype=torch.float16):
@@ -689,8 +691,6 @@ class BatchRAGModelWithCalculator:
             np.ndarray: An array of normalized embeddings for the given sentences.
 
         """
-        if isinstance(sentences, np.ndarray):
-            sentences = sentences.tolist()
         embeddings = self.sentence_model.encode(
             sentences=sentences,
             normalize_embeddings=True,
