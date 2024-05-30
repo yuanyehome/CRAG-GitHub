@@ -553,6 +553,7 @@ class BatchRAGModelWithCalculator:
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
         custom_sentence_embedding=False,
+        query_prompt="",
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -576,6 +577,7 @@ class BatchRAGModelWithCalculator:
         self.max_context_sentence_length = max_context_sentence_length
         self.log_while_inference = log_while_inference
         self.custom_sentence_embedding = custom_sentence_embedding
+        self.query_prompt = query_prompt
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -612,6 +614,7 @@ class BatchRAGModelWithCalculator:
                     "self.max_context_sentence_length": self.max_context_sentence_length,
                     "self.log_while_inference": self.log_while_inference,
                     "self.custom_sentence_embedding": self.custom_sentence_embedding,
+                    "self.query_prompt": self.query_prompt,
                 },
                 indent=2,
             )
@@ -762,7 +765,7 @@ class BatchRAGModelWithCalculator:
         # Calculate embeddings for queries
         query_embeddings = self.calculate_embeddings(
             queries,
-            prompt="Generate sentence representations for searching relative passages: ",
+            prompt=self.query_prompt,
         )
 
         # Retrieve top matches for the whole batch
