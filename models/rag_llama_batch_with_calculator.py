@@ -553,7 +553,7 @@ class BatchRAGModelWithCalculator:
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
         custom_sentence_embedding=False,
-        query_prompt="",
+        query_prompt=None,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
