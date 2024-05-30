@@ -232,7 +232,9 @@ class ChunkTableExtractor:
         self.max_context_sentence_length = max_context_sentence_length
 
     @ray.remote
-    def _extract_chunks(self, interaction_id, html_source, html_snippet, html_name):
+    def _extract_chunks(
+        self, interaction_id, html_source, html_snippet, html_name, include_tables
+    ):
         """
         Extracts and returns chunks from given HTML source.
 
@@ -248,7 +250,12 @@ class ChunkTableExtractor:
             Tuple[str, List[str]]: A tuple containing the interaction ID and a list of sentences extracted from the HTML content.
         """
         # Parse the HTML content using BeautifulSoup
-        text = trafilatura.extract(html_source, favor_precision=True, deduplicate=True)
+        text = trafilatura.extract(
+            html_source,
+            favor_precision=True,
+            deduplicate=True,
+            include_tables=include_tables,
+        )
         if text is None:
             soup = BeautifulSoup(html_source, "lxml")
             text = soup.get_text(
@@ -289,7 +296,9 @@ class ChunkTableExtractor:
 
         return interaction_id, chunks, tables
 
-    def extract_chunks(self, batch_interaction_ids, batch_search_results):
+    def extract_chunks(
+        self, batch_interaction_ids, batch_search_results, include_tables
+    ):
         """
         Extracts chunks from given batch search results using parallel processing with Ray.
 
@@ -308,6 +317,7 @@ class ChunkTableExtractor:
                 html_source=html_text["page_result"],
                 html_snippet=html_text["page_snippet"],
                 html_name=html_text["page_name"],
+                include_tables=include_tables,
             )
             for idx, search_results in enumerate(batch_search_results)
             for html_text in search_results
@@ -556,6 +566,7 @@ class BatchRAGModelWithCalculator:
         log_while_inference=False,
         custom_sentence_embedding=False,
         query_prompt="Generate sentence representations for searching relative passages: ",
+        include_table_in_text=False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -580,6 +591,7 @@ class BatchRAGModelWithCalculator:
         self.log_while_inference = log_while_inference
         self.custom_sentence_embedding = custom_sentence_embedding
         self.query_prompt = query_prompt
+        self.include_table_in_text = include_table_in_text
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -617,6 +629,7 @@ class BatchRAGModelWithCalculator:
                     "self.log_while_inference": self.log_while_inference,
                     "self.custom_sentence_embedding": self.custom_sentence_embedding,
                     "self.query_prompt": self.query_prompt,
+                    "self.include_table_in_text": self.include_table_in_text,
                 },
                 indent=2,
             )
@@ -753,7 +766,9 @@ class BatchRAGModelWithCalculator:
         if self.use_table_info:
             chunks, tables, chunk_interaction_ids, table_interaction_ids = (
                 self.chunk_extractor.extract_chunks(
-                    batch_interaction_ids, batch_search_results
+                    batch_interaction_ids,
+                    batch_search_results,
+                    include_tables=self.include_table_in_text,
                 )
             )
         else:

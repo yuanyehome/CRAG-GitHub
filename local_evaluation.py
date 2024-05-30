@@ -558,6 +558,12 @@ if __name__ == "__main__":
         type=str,
         default='{"static_or_dynamic": ["dynamic"]}',
     )
+    parser.add_argument("--include_table_in_text", action="store_true")
+    parser.add_argument(
+        "--query_prompt",
+        type=str,
+        default="Generate sentence representations for searching relative passages: ",
+    )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)
     if args.log_dir:
@@ -567,12 +573,8 @@ if __name__ == "__main__":
         os.system(
             "git rev-parse HEAD > {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
         )
-        os.system(
-            "git status >> {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
-        )
-        os.system(
-            "git diff >> {}".format(os.path.join(LOG_DIR, "commit_id.txt"))
-        )
+        os.system("git status >> {}".format(os.path.join(LOG_DIR, "commit_id.txt")))
+        os.system("git diff >> {}".format(os.path.join(LOG_DIR, "commit_id.txt")))
     logger.info(json.dumps(vars(args), indent=2))
     setup_seed(args.seed)
     if args.use_public_test:
@@ -604,6 +606,8 @@ if __name__ == "__main__":
         num_context_sentences=args.num_context_sentences,
         max_context_sentence_length=args.max_context_sentence_length,
         log_while_inference=False,
+        query_prompt=args.query_prompt,
+        include_table_in_text=args.include_table_in_text,
     )
     if participant_model.attr_predictor is not None:
         save_few_shots(
