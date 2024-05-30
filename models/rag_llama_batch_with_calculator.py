@@ -68,7 +68,7 @@ SENTENTENCE_TRANSFORMER_BATCH_SIZE = 32  # TUNE THIS VARIABLE depending on the s
 
 # ---- Query prompt before calculating query embeddings
 # ---- Need further investigation to see if this is useful
-# QUERY_PROMPT = "Generate sentence representations for searching relative passages: "
+# QUERY_PROMPT_BGE = "Represent this sentence for searching relevant passages: "
 QUERY_PROMPT = ""
 
 #### CONFIG PARAMETERS END---
