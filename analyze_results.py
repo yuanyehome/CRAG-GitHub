@@ -78,6 +78,12 @@ def main():
     with open(OUTPUT_PATH / "from_correct_to_hallucination.txt", "w") as f:
         f.write("\n".join(map(str, from_correct_to_hallucination)))
         f.write("\n\n" + " ".join(map(str, from_correct_to_hallucination)))
+    with open(OUTPUT_PATH / "removed_miss.txt", "w") as f:
+        f.write("\n".join(map(str, removed_miss)))
+        f.write("\n\n" + " ".join(map(str, removed_miss)))
+    with open(OUTPUT_PATH / "added_miss.txt", "w") as f:
+        f.write("\n".join(map(str, added_miss)))
+        f.write("\n\n" + " ".join(map(str, added_miss)))
 
 
 if __name__ == "__main__":
