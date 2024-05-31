@@ -375,6 +375,7 @@ class ChunkTableExtractor:
 class CalcAgent:
     def __init__(self, max_table_length=6000):
         self.max_table_length = max_table_length
+        self.expression_sample_num = 20
 
     def format_expression_prompts(
         self,
@@ -447,7 +448,7 @@ class CalcAgent:
         generated_expression_responses = llm.generate(
             expression_prompts,
             vllm.SamplingParams(
-                n=20,  # Number of output sequences to return for each prompt.
+                n=self.expression_sample_num,  # Number of output sequences to return for each prompt.
                 top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
                 temperature=1.0,  # Randomness of the sampling
                 skip_special_tokens=True,  # Whether to skip special tokens in the output.
@@ -459,7 +460,7 @@ class CalcAgent:
         for response in generated_expression_responses:
             curr_expressions: list[str] = []
             curr_results: list[str] = []
-            for _idx, response in enumerate(generated_expression_responses):
+            for _idx in range(self.expression_sample_num):
                 curr_expression = response.outputs[_idx].text.strip().rstrip()
                 if curr_expression in curr_expressions:
                     continue
@@ -479,7 +480,8 @@ class CalcAgent:
                 # logger.debug(f"Expression: {exp}, Result: {res}")
                 if res == "":
                     continue
-                if repr(res) == exp.replace('"', "'"):
+                repr_res = repr(res)
+                if repr_res.replace("'", '"') == exp.replace("'", '"'):
                     continue
                 if res == exp:
                     continue
