@@ -676,6 +676,7 @@ class BatchRAGModelWithCalculator:
             trust_remote_code=True,
             dtype="half",  # note: bfloat16 is not supported on nvidia-T4 GPUs
             enforce_eager=True,
+            disable_custom_all_reduce=True,
         )
         self.tokenizer = self.llm.get_tokenizer()
 
