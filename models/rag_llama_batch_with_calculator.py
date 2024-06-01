@@ -8,6 +8,7 @@ import torch
 import vllm
 import json
 import trafilatura
+import traceback
 import torch.nn.functional as F
 from loguru import logger
 from blingfire import text_to_sentences_and_offsets
@@ -463,7 +464,15 @@ class CalcAgent:
             curr_expressions: list[str] = []
             curr_results: list[str] = []
             for _idx in range(self.expression_sample_num):
-                curr_expression = response.outputs[_idx].text.strip().rstrip()
+                try:
+                    # FIXME: May have bugs in _idx?
+                    curr_expression = response.outputs[_idx].text.strip().rstrip()
+                except IndexError as e:
+                    logger.error("Got index error: {}".format(traceback.format_exc()))
+                    logger.error("IDX: {}".format(_idx))
+                    logger.error("Response: {}".format(response))
+                    logger.error("Outputs num: {}".format(len(response.outputs)))
+                    continue
                 if curr_expression in curr_expressions:
                     continue
                 if "input(" in curr_expression:
