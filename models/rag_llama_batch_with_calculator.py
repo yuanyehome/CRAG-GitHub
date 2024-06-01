@@ -388,8 +388,9 @@ class CalcAgent:
 1. The expression **MUST** be a valid Python expression.
 2. The expression **MUST** be useful to answer the question.
 3. If you think no expression is needed, you **MUST** answer with empty string.
-4. The output should be succinct, you **MUST** do reasoning in your heart withou outputing the reasoning.
+4. The output should be succinct, you **MUST** do reasoning in your heart without outputing the reasoning.
 5. You **MUST NOT** output any other words except the valid Python expression.
+6. You **MUST NOT** output the expression that need the user to input anything.
 """
         formatted_prompts = []
         for _idx, query in enumerate(batch_queries):
@@ -417,8 +418,9 @@ class CalcAgent:
 1. The expression **MUST** be a valid Python expression.
 2. The expression **MUST** be useful to answer the question.
 3. If you think no expression is needed, you **MUST** answer with empty string.
-4. The output should be succinct, you **MUST** do reasoning in your heart withou outputing the reasoning.
+4. The output should be succinct, you **MUST** do reasoning in your heart without outputing the reasoning.
 5. You **MUST NOT** output any other words except the valid Python expression.
+6. You **MUST NOT** output the expression that need the user to input anything.
 """
             user_message += f"Question: {query}\n"
             user_message += f"Using the references listed above and based on the question, generate a valid Python expression for me: \n"
@@ -463,6 +465,10 @@ class CalcAgent:
             for _idx in range(self.expression_sample_num):
                 curr_expression = response.outputs[_idx].text.strip().rstrip()
                 if curr_expression in curr_expressions:
+                    continue
+                if "input(" in curr_expression:
+                    continue
+                if "print(" in curr_expression:
                     continue
                 try:
                     exec_result = eval(curr_expression)
