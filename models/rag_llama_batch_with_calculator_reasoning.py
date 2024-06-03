@@ -376,7 +376,7 @@ class ChunkTableExtractor:
 class CalcAgent:
     def __init__(self, max_table_length=6000):
         self.max_table_length = max_table_length
-        self.expression_sample_num = 20
+        self.expression_sample_num = 5
 
     def format_expression_prompts(
         self,
