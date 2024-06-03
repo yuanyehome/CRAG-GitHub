@@ -900,12 +900,12 @@ class BatchRAGModelWithCalculatorReasoning:
             if ret_answer == "" or "i don't know" in ret_answer.lower():
                 ret_answer = "I don't know."
                 answers[pred_idxs[idx]] = ret_answer
-                pred_idxs.remove(pred_idxs[idx])
-                queries.remove(queries[idx])
-                query_times.remove(query_times[idx])
-                batch_retrieval_results.remove(batch_retrieval_results[idx])
-                batch_tables.remove(batch_tables[idx])
-                calculation_results.remove(calculation_results[idx])
+                pred_idxs.pop(idx)
+                queries.pop(idx)
+                query_times.pop(idx)
+                batch_retrieval_results.pop(idx)
+                batch_tables.pop(idx)
+                calculation_results.pop(idx)
                 continue
             reasoning_answers.append(ret_answer)
 
