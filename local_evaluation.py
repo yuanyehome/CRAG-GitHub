@@ -597,6 +597,7 @@ if __name__ == "__main__":
     # Generate predictions
     # participant_model = UserModel(debug=True)
     # FIXME: No options should be the default setting of the model
+    #        `include_table_in_text` should be changed.
     participant_model = UserModel(
         model_size=args.model_size,
         batch_size=args.batch_size,

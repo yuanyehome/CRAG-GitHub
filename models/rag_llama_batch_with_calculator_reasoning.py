@@ -897,11 +897,18 @@ class BatchRAGModelWithCalculatorReasoning:
         reasoning_answers = []
         pred_to_pop = []
         for idx, response in enumerate(reasoning_responses):
+            assert answers[pred_idxs[idx]] is None, (
+                answers,
+                answers[pred_idxs[idx]],
+                pred_idxs,
+                idx,
+                response,
+            )
             ret_answer = response.outputs[0].text.strip().rstrip()
             if ret_answer == "" or "i don't know" in ret_answer.lower():
                 ret_answer = "I don't know."
                 answers[pred_idxs[idx]] = ret_answer
-                pred_to_pop.append(idx)
+                pred_to_pop.append(pred_idxs[idx])
                 queries.pop(idx)
                 query_times.pop(idx)
                 batch_retrieval_results.pop(idx)
@@ -909,8 +916,11 @@ class BatchRAGModelWithCalculatorReasoning:
                 calculation_results.pop(idx)
                 continue
             reasoning_answers.append(ret_answer)
-        for pop_idx in pred_to_pop:
-            pred_idxs.pop(pop_idx)
+        # logger.debug("Pred idx before pop: {}".format(pred_idxs))
+        for idx in pred_to_pop:
+            # logger.debug("Remove: {}".format(idx))
+            pred_idxs.remove(idx)
+        # logger.debug("Pred idx after pop: {}".format(pred_idxs))
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
@@ -936,6 +946,12 @@ class BatchRAGModelWithCalculatorReasoning:
         # Aggregate answers into List[str]
         prompt_lens = []
         for idx, response in enumerate(responses):
+            assert answers[pred_idxs[idx]] is None, (
+                answers,
+                answers[pred_idxs[idx]],
+                pred_idxs,
+                idx,
+            )
             ret_answer = response.outputs[0].text.strip().rstrip()
             prompt_lens.append(len(response.prompt_token_ids))
             if ret_answer == "":
@@ -944,7 +960,6 @@ class BatchRAGModelWithCalculatorReasoning:
                 ret_answer = "I don't know."
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
-            assert answers[pred_idxs[idx]] is None
             answers[pred_idxs[idx]] = ret_answer
 
         if self.log_while_inference:
