@@ -7,6 +7,7 @@ import random
 import torch
 import numpy as np
 import traceback
+import time
 from datetime import datetime
 
 from loguru import logger
@@ -620,8 +621,13 @@ if __name__ == "__main__":
             "static_or_dynamic",
         )
     logger.info(f"Using model: {participant_model}")
+    START_TIME = time.perf_counter()
     predictions = generate_predictions(DATASET_PATH, participant_model, args.case_idxs)
     evaluate_attr_predictions(predictions)
+    # format time
+    elapsed_time = time.perf_counter() - START_TIME
+    formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+    logger.info("Prediction time: {}".format(formatted_time))
 
     evaluation_results = evaluate_predictions(
         predictions, EVALUATION_MODEL_NAME, openai_client
