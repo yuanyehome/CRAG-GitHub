@@ -987,11 +987,21 @@ class BatchRAGModelWithCalculatorReasoning:
             logger.info("Predicted attributes:")
             logger.info(json.dumps(all_predicted_attrs, indent=2))
 
+        formatted_prompts_final = []
+        prompt_lens_final = []
+        for idx in range(len(answers)):
+            if idx in pred_idxs:
+                prompt_lens_final.append(prompt_lens.pop(0))
+                formatted_prompts_final.append(formatted_prompts.pop(0))
+            else:
+                prompt_lens_final.append(0)
+                formatted_prompts_final.append("")
+
         if self.return_additional_info:
             return answers, {
                 "all_predicted_attrs": all_predicted_attrs,
-                "prompt_lens": prompt_lens,
-                "prompts": formatted_prompts,
+                "prompt_lens": prompt_lens_final,
+                "prompts": formatted_prompts_final,
                 "generated_expressions": calculation_results,
             }
         else:
