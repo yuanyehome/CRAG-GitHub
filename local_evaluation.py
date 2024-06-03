@@ -542,6 +542,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--use-public-test", action="store_true")
     parser.add_argument("--test-ratio", type=float, default=0.2)
+    parser.add_argument("--model_size", type=str, choices=["8B", "70B"], default="70B")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--log-dir", type=str)
     parser.add_argument("--local-large-files-path", type=str)
@@ -594,6 +595,7 @@ if __name__ == "__main__":
     # Generate predictions
     # participant_model = UserModel(debug=True)
     participant_model = UserModel(
+        model_size=args.model_size,
         nprocs=torch.cuda.device_count(),
         local_large_files_path=args.local_large_files_path,
         custom_local_model_path=args.custom_local_model_path,
