@@ -845,7 +845,7 @@ class BatchRAGModelWithCalculatorReasoning:
             batch_tables.append(relevant_tables)
 
         answers = [None for _ in queries]
-        pred_idxs = [idx for idx in range(len(queries))]
+        pred_idxs = list(range(len(queries)))
         all_predicted_attrs = {}
         if self.idk_attrs:
             idk_idxs = []
@@ -895,12 +895,13 @@ class BatchRAGModelWithCalculatorReasoning:
             use_tqdm=False,  # you might consider setting this to True during local development
         )
         reasoning_answers = []
+        pred_to_pop = []
         for idx, response in enumerate(reasoning_responses):
             ret_answer = response.outputs[0].text.strip().rstrip()
             if ret_answer == "" or "i don't know" in ret_answer.lower():
                 ret_answer = "I don't know."
                 answers[pred_idxs[idx]] = ret_answer
-                pred_idxs.pop(idx)
+                pred_to_pop.append(idx)
                 queries.pop(idx)
                 query_times.pop(idx)
                 batch_retrieval_results.pop(idx)
@@ -908,6 +909,8 @@ class BatchRAGModelWithCalculatorReasoning:
                 calculation_results.pop(idx)
                 continue
             reasoning_answers.append(ret_answer)
+        for pop_idx in pred_to_pop:
+            pred_idxs.remove(pop_idx)
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
