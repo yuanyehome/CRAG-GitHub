@@ -908,19 +908,35 @@ class BatchRAGModelWithCalculatorReasoning:
             if ret_answer == "" or "i don't know" in ret_answer.lower():
                 ret_answer = "I don't know."
                 answers[pred_idxs[idx]] = ret_answer
-                pred_to_pop.append(pred_idxs[idx])
-                queries.pop(idx)
-                query_times.pop(idx)
-                batch_retrieval_results.pop(idx)
-                batch_tables.pop(idx)
-                calculation_results.pop(idx)
+                pred_to_pop.append(idx)
                 continue
             reasoning_answers.append(ret_answer)
-        # logger.debug("Pred idx before pop: {}".format(pred_idxs))
-        for idx in pred_to_pop:
-            # logger.debug("Remove: {}".format(idx))
-            pred_idxs.remove(idx)
-        # logger.debug("Pred idx after pop: {}".format(pred_idxs))
+        pred_idxs = [
+            pred_idxs[idx] for idx in range(len(pred_idxs)) if idx not in pred_to_pop
+        ]
+        queries = [
+            queries[idx] for idx in range(len(queries)) if idx not in pred_to_pop
+        ]
+        query_times = [
+            query_times[idx]
+            for idx in range(len(query_times))
+            if idx not in pred_to_pop
+        ]
+        batch_retrieval_results = [
+            batch_retrieval_results[idx]
+            for idx in range(len(batch_retrieval_results))
+            if idx not in pred_to_pop
+        ]
+        batch_tables = [
+            batch_tables[idx]
+            for idx in range(len(batch_tables))
+            if idx not in pred_to_pop
+        ]
+        calculation_results = [
+            calculation_results[idx]
+            for idx in range(len(calculation_results))
+            if idx not in pred_to_pop
+        ]
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
