@@ -910,7 +910,7 @@ class BatchRAGModelWithCalculatorReasoning:
                 continue
             reasoning_answers.append(ret_answer)
         for pop_idx in pred_to_pop:
-            pred_idxs.remove(pop_idx)
+            pred_idxs.pop(pop_idx)
 
         # Prepare formatted prompts from the LLM
         formatted_prompts = self.format_prompts(
