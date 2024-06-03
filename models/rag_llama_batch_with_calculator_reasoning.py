@@ -845,6 +845,7 @@ class BatchRAGModelWithCalculatorReasoning:
             batch_tables.append(relevant_tables)
 
         answers = [None for _ in queries]
+        pred_idxs = [idx for idx in range(len(queries))]
         all_predicted_attrs = {}
         if self.idk_attrs:
             idk_idxs = []
@@ -864,6 +865,12 @@ class BatchRAGModelWithCalculatorReasoning:
                 idk_idxs = set.intersection(*idk_idxs)
             for idk_idx in idk_idxs:
                 answers[idk_idx] = "I don't know."
+                pred_idxs.remove(idk_idx)
+
+        queries = [queries[idx] for idx in pred_idxs]
+        query_times = [query_times[idx] for idx in pred_idxs]
+        batch_retrieval_results = [batch_retrieval_results[idx] for idx in pred_idxs]
+        batch_tables = [batch_tables[idx] for idx in pred_idxs]
 
         calculation_results: list[list[str]] = self.calculator.get_calculation_results(
             self.llm, queries, batch_retrieval_results, batch_tables
@@ -892,7 +899,14 @@ class BatchRAGModelWithCalculatorReasoning:
             ret_answer = response.outputs[0].text.strip().rstrip()
             if ret_answer == "" or "i don't know" in ret_answer.lower():
                 ret_answer = "I don't know."
-                answers[idx] = ret_answer
+                answers[pred_idxs[idx]] = ret_answer
+                pred_idxs.remove(pred_idxs[idx])
+                queries.remove(queries[idx])
+                query_times.remove(query_times[idx])
+                batch_retrieval_results.remove(batch_retrieval_results[idx])
+                batch_tables.remove(batch_tables[idx])
+                calculation_results.remove(calculation_results[idx])
+                continue
             reasoning_answers.append(ret_answer)
 
         # Prepare formatted prompts from the LLM
@@ -927,8 +941,8 @@ class BatchRAGModelWithCalculatorReasoning:
                 ret_answer = "I don't know."
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
-            if answers[idx] is None:
-                answers[idx] = ret_answer
+            assert answers[pred_idxs[idx]] is None
+            answers[pred_idxs[idx]] = ret_answer
 
         if self.log_while_inference:
             logger.info("Batch queries:")
@@ -957,6 +971,13 @@ class BatchRAGModelWithCalculatorReasoning:
         batch_table_results: list[list[str]] = [],
         batch_calculation_results: list[list[str]] = [],
     ):
+        assert (
+            len(queries)
+            == len(query_times)
+            == len(batch_retrieval_results)
+            == len(batch_table_results)
+            == len(batch_calculation_results)
+        )
         system_prompt = "You are provided with a question and various references. Your task is to answer the question with your reasoning process. There are also some calculation results from another agent, which may be useful for you. If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** generate the reasoning process before the answer. Let's think step by step now!"
         formatted_prompts = []
         for _idx, query in enumerate(queries):
@@ -1022,6 +1043,14 @@ class BatchRAGModelWithCalculatorReasoning:
         - query_times (List[str]): A list of query_time strings corresponding to each query.
         - batch_retrieval_results (List[str])
         """
+        assert (
+            len(queries)
+            == len(query_times)
+            == len(batch_retrieval_results)
+            == len(batch_table_results)
+            == len(batch_calculation_results)
+            == len(reasoning_answers)
+        )
         system_prompt = "You are provided with a question and various references. Your task is to answer the question succinctly, using the fewest words possible. There are also some calculation results from another agent, which may be useful for you. There is also a reasoning output from another reasoning agent, you may also use it as your reference. If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. There is no need to explain the reasoning behind your answers."
         formatted_prompts = []
 
