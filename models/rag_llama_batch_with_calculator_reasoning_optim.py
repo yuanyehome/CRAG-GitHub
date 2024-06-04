@@ -918,10 +918,11 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 curr_final_answer = (
                     ret_answer_lower.split("## answer")[1].strip().rstrip()
                 )
-                assert curr_final_answer.endswith("===end===")
+                # assert curr_final_answer.endswith("===end===")
                 curr_final_answer = (
                     curr_final_answer.split("===end===")[0].strip().rstrip()
                 )
+                assert len(curr_final_answer) < 300
                 answers[pred_idxs[idx]] = curr_final_answer
                 pred_to_pop.append(idx)
                 parse_succ += 1
