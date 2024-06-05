@@ -915,9 +915,9 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 continue
             try:
                 ret_answer_lower = ret_answer.lower()
-                assert "## answer" in ret_answer_lower
+                assert "## answer:" in ret_answer_lower
                 curr_final_answer = (
-                    ret_answer_lower.split("## answer")[1].strip().rstrip()
+                    ret_answer_lower.split("## answer:")[1].strip().rstrip()
                 )
                 # assert curr_final_answer.endswith("===end===")
                 curr_final_answer = (
