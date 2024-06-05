@@ -493,7 +493,7 @@ class CalcAgent:
                     exec_result = None
             curr_generated_expressions = []
             for exp, res in zip(curr_expressions, curr_results):
-                # logger.debug(f"Expression: {exp}, Result: {res}")
+                # logger.info(f"Expression: {exp}, Result: {res}")
                 if res == "":
                     continue
                 repr_res = repr(res)
@@ -504,7 +504,7 @@ class CalcAgent:
                 curr_generated_expressions.append(
                     json.dumps({"Expression": exp, "Result": res})
                 )
-            # logger.debug(f"Generated expressions: {curr_generated_expressions}")
+            # logger.info(f"Generated expressions: {curr_generated_expressions}")
             generated_expressions.append(curr_generated_expressions)
         return generated_expressions
 
@@ -929,14 +929,14 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 parse_succ += 1
                 continue
             except:
-                logger.debug(
+                logger.info(
                     "Failed to parse str. Fallback to use summarize the reasoning."
                 )
-                logger.debug(traceback.format_exc())
-                logger.debug(ret_answer)
+                logger.info(traceback.format_exc())
+                logger.info(ret_answer)
                 parse_fail += 1
                 reasoning_answers.append(ret_answer)
-        logger.debug("Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(parse_succ, parse_fail))
+        logger.info("Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(parse_succ, parse_fail))
         pred_idxs = [
             pred_idxs[idx] for idx in range(len(pred_idxs)) if idx not in pred_to_pop
         ]
