@@ -923,7 +923,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                     curr_final_answer.split("===end===")[0].strip().rstrip()
                 )
                 assert len(curr_final_answer) < 300
-                answers[pred_idxs[idx]] = curr_final_answer
+                answers[pred_idxs[idx]] = curr_final_answer.strip()
                 pred_to_pop.append(idx)
                 parse_succ += 1
                 continue
