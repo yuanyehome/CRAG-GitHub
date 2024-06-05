@@ -20,6 +20,7 @@ from models.utils_html import get_tables, clean_html
 
 # os.system("pip list")
 # os.system("nvidia-smi")
+logger.level("DEBUG")
 
 ######################################################################################################
 ######################################################################################################
@@ -590,7 +591,7 @@ class BatchRAGModelWithCalculator:
         log_while_inference=False,
         custom_sentence_embedding=False,
         query_prompt=QUERY_PROMPT,
-        include_table_in_text=False,
+        include_table_in_text=True,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
