@@ -913,6 +913,11 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 answers[pred_idxs[idx]] = ret_answer
                 pred_to_pop.append(idx)
                 continue
+            if "invalid question" in ret_answer.lower():
+                ret_answer = "invalid question"
+                answers[pred_idxs[idx]] = ret_answer
+                pred_to_pop.append(idx)
+                continue
             try:
                 ret_answer_lower = ret_answer.lower()
                 assert "## answer:" in ret_answer_lower
@@ -998,6 +1003,8 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 ret_answer = "I don't know."
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
+            if "invalid question" in ret_answer.lower():
+                ret_answer = "invalid question"
             answers[pred_idxs[idx]] = ret_answer.strip()
 
         if self.log_while_inference:
@@ -1044,7 +1051,11 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             == len(batch_table_results)
             == len(batch_calculation_results)
         )
-        system_prompt = """You are provided with a question and various references. Your task is to answer the question with your reasoning process. There are also some calculation results from another agent, which may be useful for you. If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
+        system_prompt = """You are provided with a question and various references.
+Your task is to answer the question with your reasoning process.
+There are also some calculation results from another agent, which may be useful for you.
+If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
 
 ===START===
 ## Reasoning:
@@ -1054,8 +1065,12 @@ class OptimBatchRAGModelWithCalculatorReasoning:
 <YOUR FINAL ANSWER>
 ===END===
 
-**IMPORTANT**: your generation **MUST** starts with "===START===" and ends with "===END===".
-`<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible. `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+**IMPORTANT RULES**:
+- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+- Your generation **MUST** starts with "===START===" and ends with "===END===".
+- `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
+- `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
         for _idx, query in enumerate(queries):
@@ -1086,7 +1101,14 @@ Let's think step by step now!"""
                     expression_references += f"### Calculation {idx + 1}: \n"
                     expression_references += f"{expression}\n"
                 user_message += f"{expression_references}\n------\n\n"
-            user_message += "**Remember your rule**: If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** generate the reasoning process before the answer. Let's think step by step now! \n"
+            user_message += """**Remember your IMPORTANT RULES**:
+- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+- Your generation **MUST** starts with "===START===" and ends with "===END===".
+- `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
+- `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+Let's think step by step now!
+"""
             user_message += (
                 f"Using the references listed above, answer the following question: \n"
             )
