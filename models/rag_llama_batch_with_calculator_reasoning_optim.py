@@ -997,7 +997,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 ret_answer = "I don't know."
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
-            answers[pred_idxs[idx]] = ret_answer
+            answers[pred_idxs[idx]] = ret_answer.strip()
 
         if self.log_while_inference:
             logger.info("Batch queries:")
