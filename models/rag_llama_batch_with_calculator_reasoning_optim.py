@@ -884,10 +884,14 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             batch_tables,
             calculation_results,
         )
+        if len(pred_idxs) == 0:
+            curr_sample_num = 1
+        else:
+            curr_sample_num = max(int(4 / (len(pred_idxs))), 1)
         reasoning_responses = self.llm.generate(
             reasoning_formatted_prompts,
             vllm.SamplingParams(
-                n=3,  # Number of output sequences to return for each prompt.
+                n=curr_sample_num,  # Number of output sequences to return for each prompt.
                 top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
                 temperature=0.5,  # Randomness of the sampling
                 skip_special_tokens=True,  # Whether to skip special tokens in the output.
