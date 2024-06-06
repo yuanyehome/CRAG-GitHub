@@ -54,9 +54,9 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 #### CONFIG PARAMETERS ---
 
 # Define the number of context sentences to consider for generating an answer.
-NUM_CONTEXT_SENTENCES = 16
+NUM_CONTEXT_SENTENCES = 10
 # Set the maximum length for each context sentence (in characters).
-MAX_CONTEXT_SENTENCE_LENGTH = 500
+MAX_CONTEXT_SENTENCE_LENGTH = 200
 
 # Batch size you wish the evaluators will use to call the `batch_generate_answer` function
 AICROWD_SUBMISSION_BATCH_SIZE = 4  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
@@ -299,9 +299,20 @@ class ChunkTableExtractor:
                 else:
                     chunks.append(sentence)
 
+        final_chunks = [html_snippet]
+        curr_sent = []
+        for sent in chunks:
+            if len(curr_sent) < 3:
+                curr_sent.append(sent)
+            else:
+                final_chunks.append(" ".join(curr_sent))
+                curr_sent = [sent]
+        if len(curr_sent) > 0:
+            final_chunks.append(" ".join(curr_sent))
+
         tables = get_tables(clean_html(html_source), html_name)
 
-        return interaction_id, chunks, tables
+        return interaction_id, final_chunks, tables
 
     def extract_chunks(
         self, batch_interaction_ids, batch_search_results, include_tables
@@ -377,7 +388,7 @@ class ChunkTableExtractor:
 class CalcAgent:
     def __init__(self, max_table_length=6000):
         self.max_table_length = max_table_length
-        self.expression_sample_num = 20
+        self.expression_sample_num = 5
 
     def format_expression_prompts(
         self,
@@ -585,13 +596,13 @@ class OptimBatchRAGModelWithCalculatorReasoning:
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
         use_table_info: bool = True,
-        max_table_length: int = 6000,
+        max_table_length: int = 4000,
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
         custom_sentence_embedding=False,
         query_prompt=QUERY_PROMPT,
-        include_table_in_text=True,
+        include_table_in_text=False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -887,7 +898,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
         if len(pred_idxs) == 0:
             curr_sample_num = 1
         else:
-            curr_sample_num = max(int(3 / (len(pred_idxs))), 1)
+            curr_sample_num = max(int(4 / (len(pred_idxs))), 1)
         reasoning_responses = self.llm.generate(
             reasoning_formatted_prompts,
             vllm.SamplingParams(
