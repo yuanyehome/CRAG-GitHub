@@ -887,7 +887,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
         if len(pred_idxs) == 0:
             curr_sample_num = 1
         else:
-            curr_sample_num = max(int(4 / (len(pred_idxs))), 1)
+            curr_sample_num = max(int(3 / (len(pred_idxs))), 1)
         reasoning_responses = self.llm.generate(
             reasoning_formatted_prompts,
             vllm.SamplingParams(
