@@ -887,7 +887,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
         reasoning_responses = self.llm.generate(
             reasoning_formatted_prompts,
             vllm.SamplingParams(
-                n=1,  # Number of output sequences to return for each prompt.
+                n=3,  # Number of output sequences to return for each prompt.
                 top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
                 temperature=0.5,  # Randomness of the sampling
                 skip_special_tokens=True,  # Whether to skip special tokens in the output.
@@ -907,17 +907,30 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 idx,
                 response,
             )
+            all_ret_answers = [o.text.strip().rstrip() for o in response.outputs]
+            is_idk = False
+            for tmp_ret_answer in all_ret_answers:
+                if tmp_ret_answer == "" or "i don't know" in tmp_ret_answer.lower():
+                    tmp_ret_answer = "I don't know."
+                    answers[pred_idxs[idx]] = tmp_ret_answer
+                    pred_to_pop.append(idx)
+                    is_idk = True
+                    break
+            if is_idk:
+                continue
+            is_false_premise = False
+            for tmp_ret_answer in all_ret_answers:
+                if "invalid question" in tmp_ret_answer.lower() or (
+                    ret_answer.lower() == "none"
+                ):
+                    tmp_ret_answer = "invalid question"
+                    answers[pred_idxs[idx]] = tmp_ret_answer
+                    pred_to_pop.append(idx)
+                    is_false_premise = True
+                    break
+            if is_false_premise:
+                continue
             ret_answer = response.outputs[0].text.strip().rstrip()
-            if ret_answer == "" or "i don't know" in ret_answer.lower():
-                ret_answer = "I don't know."
-                answers[pred_idxs[idx]] = ret_answer
-                pred_to_pop.append(idx)
-                continue
-            if "invalid question" in ret_answer.lower():
-                ret_answer = "invalid question"
-                answers[pred_idxs[idx]] = ret_answer
-                pred_to_pop.append(idx)
-                continue
             try:
                 ret_answer_lower = ret_answer.lower()
                 assert "## answer:" in ret_answer_lower
@@ -941,7 +954,11 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 logger.info(ret_answer)
                 parse_fail += 1
                 reasoning_answers.append(ret_answer)
-        logger.info("Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(parse_succ, parse_fail))
+        logger.info(
+            "Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(
+                parse_succ, parse_fail
+            )
+        )
         pred_idxs = [
             pred_idxs[idx] for idx in range(len(pred_idxs)) if idx not in pred_to_pop
         ]
@@ -1003,7 +1020,9 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 ret_answer = "I don't know."
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
-            if "invalid question" in ret_answer.lower():
+            if "invalid question" in ret_answer.lower() or (
+                ret_answer.lower() == "none"
+            ):
                 ret_answer = "invalid question"
             answers[pred_idxs[idx]] = ret_answer.strip()
 
@@ -1055,10 +1074,15 @@ class OptimBatchRAGModelWithCalculatorReasoning:
 Your task is to answer the question with your reasoning process.
 There are also some calculation results from another agent, which may be useful for you.
 If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+You **MUST** think if the question has a false premise, then think the final answer.
 You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
 
 ===START===
 ## Reasoning:
+- Does it have a false premise?
+<YOUR REASONING>
+- What it the final answer?
 <YOUR REASONING>
 ------
 ## Answer:
