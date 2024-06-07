@@ -857,6 +857,8 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             batch_tables.append(relevant_tables)
 
         answers = [None for _ in queries]
+        reasoning_prompts = [None for _ in queries]
+        all_reasoning_outputs = [None for _ in queries]
         pred_idxs = list(range(len(queries)))
         all_predicted_attrs = {}
         if self.idk_attrs:
@@ -895,6 +897,8 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             batch_tables,
             calculation_results,
         )
+        for _idx, _reasoning_prompt in zip(pred_idxs, reasoning_formatted_prompts):
+            reasoning_prompts[_idx] = _reasoning_prompt
         if len(pred_idxs) == 0:
             curr_sample_num = 1
         else:
@@ -923,6 +927,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 response,
             )
             all_ret_answers = [o.text.strip().rstrip() for o in response.outputs]
+            all_reasoning_outputs[pred_idxs[idx]] = all_ret_answers
             is_idk = False
             for tmp_ret_answer in all_ret_answers:
                 if tmp_ret_answer == "" or "i don't know" in tmp_ret_answer.lower():
@@ -932,6 +937,10 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                     is_idk = True
                     break
             if is_idk:
+                all_reasoning_outputs[pred_idxs[idx]].append({
+                    "Parse success": True,
+                    "Parsed result": "i don't know"
+                })
                 continue
             is_false_premise = False
             for tmp_ret_answer in all_ret_answers:
@@ -944,6 +953,10 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                     is_false_premise = True
                     break
             if is_false_premise:
+                all_reasoning_outputs[pred_idxs[idx]].append({
+                    "Parse success": True,
+                    "Parsed result": "invalid question"
+                })
                 continue
             ret_answer = response.outputs[0].text.strip().rstrip()
             try:
@@ -960,6 +973,10 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 answers[pred_idxs[idx]] = curr_final_answer.strip()
                 pred_to_pop.append(idx)
                 parse_succ += 1
+                all_reasoning_outputs[pred_idxs[idx]].append({
+                    "Parse success": True,
+                    "Parsed result": curr_final_answer.strip()
+                })
                 continue
             except:
                 logger.info(
@@ -968,6 +985,10 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 logger.info(traceback.format_exc())
                 logger.info(ret_answer)
                 parse_fail += 1
+                all_reasoning_outputs[pred_idxs[idx]].append({
+                    "Parse success": False,
+                    "Parsed result": ""
+                })
                 reasoning_answers.append(ret_answer)
         logger.info(
             "Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(
@@ -1066,6 +1087,8 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                 "prompt_lens": prompt_lens_final,
                 "prompts": formatted_prompts_final,
                 "generated_expressions": calculation_results,
+                "reasoning_prompts": reasoning_prompts,
+                "reasoning_outputs": all_reasoning_outputs,
             }
         else:
             return answers

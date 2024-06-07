@@ -155,6 +155,8 @@ def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
     batch_size = participant_model.get_batch_size()
     all_prompt_lens: list[int] = []
     all_prompts: list[str] = []
+    all_reasoning_prompts: list[str] = []
+    all_reasoning_outputs: list[list[str | dict]] = []
 
     dataset_items = []
     if not args.use_public_test:
@@ -208,6 +210,10 @@ def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
             all_prompt_lens.extend(batch_additional_info["prompt_lens"])
         if "prompts" in batch_additional_info:
             all_prompts.extend(batch_additional_info["prompts"])
+        if "reasoning_prompts" in batch_additional_info:
+            all_reasoning_prompts.extend(batch_additional_info["reasoning_prompts"])
+        if "reasoning_outputs" in batch_additional_info:
+            all_reasoning_outputs.extend(batch_additional_info["reasoning_outputs"])
         queries.extend(batch["query"])
         domains.extend(batch["domain"])
         question_types.extend(batch["question_type"])
@@ -273,6 +279,22 @@ def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
             f.write(f"Query:\n{query}\n")
             f.write("*" * 50 + "\n")
             f.write(f"Prompt:\n{prompt}\n")
+            f.write("=" * 50 + "\n")
+    with open(os.path.join(LOG_DIR, "all_reasoning.txt"), "w") as f:
+        for query, reasoning_prompt, reasoning_output in zip(
+            queries, all_reasoning_prompts, all_reasoning_outputs
+        ):
+            f.write("=" * 50 + "\n")
+            f.write(f"Query:\n{query}\n")
+            f.write("*" * 50 + "\n")
+            f.write(f"Reasoning prompt:\n{reasoning_prompt}\n")
+            f.write("*" * 50 + "\n")
+            f.write(f"Reasoning output (sample_num={len(reasoning_output)-1}):\n")
+            for output in reasoning_output:
+                if isinstance(output, dict):
+                    f.write(json.dumps(output, indent=2) + "\n")
+                else:
+                    f.write(f"{output}\n")
             f.write("=" * 50 + "\n")
 
     for idx, prediction in enumerate(final_predictions):
