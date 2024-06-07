@@ -284,18 +284,27 @@ def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
         for query, reasoning_prompt, reasoning_output in zip(
             queries, all_reasoning_prompts, all_reasoning_outputs
         ):
+            if reasoning_prompt is None:
+                assert reasoning_output is None
+            if reasoning_output is None:
+                assert reasoning_prompt is None
+            
             f.write("=" * 50 + "\n")
             f.write(f"Query:\n{query}\n")
             f.write("*" * 50 + "\n")
             f.write(f"Reasoning prompt:\n{reasoning_prompt}\n")
             f.write("*" * 50 + "\n")
-            f.write(f"Reasoning output (sample_num={len(reasoning_output)-1}):\n")
-            for output in reasoning_output:
-                if isinstance(output, dict):
-                    f.write(json.dumps(output, indent=2) + "\n")
-                else:
-                    f.write(f"{output}\n")
-            f.write("=" * 50 + "\n")
+            if reasoning_output is None:
+                f.write(f"Reasoning output (sample_num=None):\n")
+                f.write("None\n")
+            else:
+                f.write(f"Reasoning output (sample_num={len(reasoning_output)-1}):\n")
+                for output in reasoning_output:
+                    if isinstance(output, dict):
+                        f.write(json.dumps(output, indent=2) + "\n")
+                    else:
+                        f.write(f"{output}\n")
+                f.write("=" * 50 + "\n")
 
     for idx, prediction in enumerate(final_predictions):
         prediction["idx"] = idx
