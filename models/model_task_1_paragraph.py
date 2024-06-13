@@ -56,7 +56,7 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 # Define the number of context sentences to consider for generating an answer.
 NUM_CONTEXT_SENTENCES = 8
 # Set the maximum length for each context sentence (in characters).
-MAX_CONTEXT_SENTENCE_LENGTH = 200
+MAX_CONTEXT_SENTENCE_LENGTH = 400
 
 # Batch size you wish the evaluators will use to call the `batch_generate_answer` function
 AICROWD_SUBMISSION_BATCH_SIZE = 4  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
@@ -185,8 +185,11 @@ class ChunkTableExtractor:
         #         curr_sent = [sent]
         # if len(curr_sent) > 0:
         #     final_chunks.append(" ".join(curr_sent))
-        
-        chunks = get_paragraphs(clean_html(html_source, remove_links=True), cut_len=400)
+
+        chunks = get_paragraphs(
+            clean_html(html_source, remove_links=True),
+            cut_len=self.max_context_sentence_length,
+        )
         final_chunks = [html_snippet] + chunks
 
         tables = get_tables(clean_html(html_source), html_name)
@@ -816,10 +819,9 @@ class ParagraphBatchRAGModelWithCalculatorReasoning:
                     is_idk = True
                     break
             if is_idk:
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": "i don't know"
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": "i don't know"}
+                )
                 continue
             is_false_premise = False
             for tmp_ret_answer in all_ret_answers:
@@ -832,10 +834,9 @@ class ParagraphBatchRAGModelWithCalculatorReasoning:
                     is_false_premise = True
                     break
             if is_false_premise:
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": "invalid question"
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": "invalid question"}
+                )
                 continue
             ret_answer = response.outputs[0].text.strip().rstrip()
             try:
@@ -852,10 +853,9 @@ class ParagraphBatchRAGModelWithCalculatorReasoning:
                 answers[pred_idxs[idx]] = curr_final_answer.strip()
                 pred_to_pop.append(idx)
                 parse_succ += 1
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": curr_final_answer.strip()
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": curr_final_answer.strip()}
+                )
                 continue
             except:
                 logger.info(
@@ -864,10 +864,9 @@ class ParagraphBatchRAGModelWithCalculatorReasoning:
                 logger.info(traceback.format_exc())
                 logger.info(ret_answer)
                 parse_fail += 1
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": False,
-                    "Parsed result": ""
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": False, "Parsed result": ""}
+                )
                 reasoning_answers.append(ret_answer)
         logger.info(
             "Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(
