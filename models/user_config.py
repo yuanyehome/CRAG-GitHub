@@ -6,6 +6,7 @@ from models.rag_llama_baseline_batch import BatchRAGModel
 from models.rag_llama_batch_with_calculator import BatchRAGModelWithCalculator
 from models.rag_llama_batch_with_calculator_reasoning import BatchRAGModelWithCalculatorReasoning
 from models.rag_llama_batch_with_calculator_reasoning_optim import OptimBatchRAGModelWithCalculatorReasoning
+from models.model_task_1_add_direct_answer import OptimBatchRAGModelWithCalculatorReasoningDirectAnswer
 from models.model_task_1_paragraph import ParagraphBatchRAGModelWithCalculatorReasoning
 from models.rag_llama_baseline_batch_with_reasoning import BatchReasoningRAGModel
 from models.rag_llama_baseline_batch_custom import BatchRAGModelCustom
@@ -16,7 +17,8 @@ from functools import partial
 # UserModel = BatchReasoningRAGModel
 # UserModel = BatchRAGModelCustom
 
-UserModel = OptimBatchRAGModelWithCalculatorReasoning
+# UserModel = OptimBatchRAGModelWithCalculatorReasoning
+UserModel = OptimBatchRAGModelWithCalculatorReasoningDirectAnswer
 # UserModel = BatchRAGModelWithCalculator
 # UserModel = ParagraphBatchRAGModelWithCalculatorReasoning
 

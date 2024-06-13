@@ -574,7 +574,7 @@ class CustomSentenceEmbeddingModel:
         return embeddings
 
 
-class OptimBatchRAGModelWithCalculatorReasoning:
+class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
     """
     An example RAGModel for the KDDCup 2024 Meta CRAG Challenge
     which includes all the key components of a RAG lifecycle.
