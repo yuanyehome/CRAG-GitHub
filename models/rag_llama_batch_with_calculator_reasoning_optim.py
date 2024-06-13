@@ -970,6 +970,10 @@ class OptimBatchRAGModelWithCalculatorReasoning:
                     curr_final_answer.split("===end===")[0].strip().rstrip()
                 )
                 assert len(curr_final_answer) < 300
+                if "invalid question" in curr_final_answer.lower() or (
+                    curr_final_answer.lower() in ["none", "never"]
+                ):
+                    curr_final_answer = "invalid question"
                 answers[pred_idxs[idx]] = curr_final_answer.strip()
                 pred_to_pop.append(idx)
                 parse_succ += 1
@@ -1057,7 +1061,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
             if "invalid question" in ret_answer.lower() or (
-                ret_answer.lower() == ["none", "never"]
+                ret_answer.lower() in ["none", "never"]
             ):
                 ret_answer = "invalid question"
             answers[pred_idxs[idx]] = ret_answer.strip()
@@ -1120,7 +1124,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 ## Reasoning:
 - Does it have a false premise?
 <YOUR REASONING>
-- What it the final answer?
+- What is the final answer?
 <YOUR REASONING>
 ------
 ## Answer:
