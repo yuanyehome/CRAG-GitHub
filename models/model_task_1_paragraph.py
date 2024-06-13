@@ -186,7 +186,7 @@ class ChunkTableExtractor:
         # if len(curr_sent) > 0:
         #     final_chunks.append(" ".join(curr_sent))
         
-        chunks = get_paragraphs(clean_html(html_source, remove_links=True), cut_len=600)
+        chunks = get_paragraphs(clean_html(html_source, remove_links=True), cut_len=400)
         final_chunks = [html_snippet] + chunks
 
         tables = get_tables(clean_html(html_source), html_name)
