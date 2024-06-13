@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 
 
-def get_paragraphs(soup) -> list[str]:
-    content = []
+def get_paragraphs(soup, cut_len: int) -> list[str]:
+    contents = []
     current_heading = ""  # 用于保存最近的标题
     for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p"]):
         if tag.name in ["h1", "h2", "h3", "h4", "h5", "h6"]:
@@ -15,8 +15,10 @@ def get_paragraphs(soup) -> list[str]:
             )
         else:
             # Add the current heading to the beginning of the paragraph
-            content.append(current_heading + " ".join(tag.get_text().strip()))
-    return content
+            curr_para = current_heading + " ".join(tag.get_text().strip())
+            curr_para = curr_para[:cut_len]
+            contents.append(curr_para)
+    return contents
 
 
 def clean_html(webpage, remove_links=False):
