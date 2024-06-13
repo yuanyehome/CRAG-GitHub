@@ -1,7 +1,25 @@
 from bs4 import BeautifulSoup
 
 
-def clean_html(webpage):
+def get_paragraphs(soup) -> list[str]:
+    content = []
+    current_heading = ""  # 用于保存最近的标题
+    for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p"]):
+        if tag.name in ["h1", "h2", "h3", "h4", "h5", "h6"]:
+            # Add the appropriate number of # characters before the heading
+            current_heading = (
+                "#" * (int(tag.name[1]) + 2)
+                + " "
+                + " ".join(tag.get_text().strip())
+                + "\n"
+            )
+        else:
+            # Add the current heading to the beginning of the paragraph
+            content.append(current_heading + " ".join(tag.get_text().strip()))
+    return content
+
+
+def clean_html(webpage, remove_links=False):
     soup = BeautifulSoup(webpage, features="html.parser")
     # pprint(soup.get_text())
 
@@ -10,8 +28,9 @@ def clean_html(webpage):
 
     # 查找并删除所有 <a> 标签。删除网页链接
     # Update: 有时候 <a> 标签是带有信息的，暂时不删除
-    # for link in soup.find_all("a"):
-    #     link.decompose()  # decompose 方法会从文档树中移除该元素
+    if remove_links:
+        for link in soup.find_all("a"):
+            link.unwrap()  # decompose 方法会从文档树中移除该元素
 
     # 删除页眉
     # for header in soup.find_all(['header', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
@@ -33,12 +52,6 @@ def clean_html(webpage):
             text_element.replace_with(decoded_text)
 
     return soup
-
-
-def get_paragraphs(soup):
-    paragraphs = [p.get_text() for p in soup.find_all("p")]
-    return paragraphs
-    # Extract all the information in the paragraph
 
 
 def get_content(soup):
