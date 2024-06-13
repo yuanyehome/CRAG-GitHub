@@ -590,7 +590,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
         custom_local_model_path=None,
         quantization=None,
         vllm_gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
-        idk_attrs={"static_or_dynamic": ["dynamic"]},
+        idk_attrs={"domain": ["finance"], "static_or_dynamic": ["dynamic"]},
         attr_combine_method="union",
         attr_predictor_method="few-shot",
         return_additional_info: bool = False,
