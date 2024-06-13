@@ -856,8 +856,6 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             batch_retrieval_results.append(retrieval_results)
             batch_tables.append(relevant_tables)
 
-        direct_answers = self.get_direct_answers(queries)
-
         answers = [None for _ in queries]
         reasoning_prompts = [None for _ in queries]
         all_reasoning_outputs = [None for _ in queries]
@@ -891,6 +889,8 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         calculation_results: list[list[str]] = self.calculator.get_calculation_results(
             self.llm, queries, batch_retrieval_results, batch_tables
         )
+
+        direct_answers = self.get_direct_answers(queries)
 
         reasoning_formatted_prompts = self.format_reasoning_prompts(
             queries,
