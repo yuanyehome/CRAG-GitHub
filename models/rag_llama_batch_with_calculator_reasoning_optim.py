@@ -945,7 +945,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             is_false_premise = False
             for tmp_ret_answer in all_ret_answers:
                 if "invalid question" in tmp_ret_answer.lower() or (
-                    tmp_ret_answer.lower() == "none"
+                    tmp_ret_answer.lower() in ["none", "never"]
                 ):
                     tmp_ret_answer = "invalid question"
                     answers[pred_idxs[idx]] = tmp_ret_answer
