@@ -1057,7 +1057,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
             if "invalid question" in ret_answer.lower() or (
-                ret_answer.lower() == "none"
+                ret_answer.lower() == ["none", "never"]
             ):
                 ret_answer = "invalid question"
             answers[pred_idxs[idx]] = ret_answer.strip()
