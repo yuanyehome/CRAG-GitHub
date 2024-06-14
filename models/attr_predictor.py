@@ -184,25 +184,11 @@ def predict_static_or_dynamic(
         curr_samples = [
             response.outputs[idx].text.strip().rstrip() for idx in range(sample_num)
         ]
-        curr_cnt = {}
+        curr_final_ans = "static"
         for sample in curr_samples:
-            curr_cnt.setdefault(sample, 0)
-            curr_cnt[sample] += 1
-        curr_ans = max(curr_cnt, key=curr_cnt.get)
-        curr_final_ans = None
-        all_keys = ["static", "dynamic"]
-        for curr_key in all_keys:
-            if curr_key in curr_ans:
-                curr_final_ans = curr_key
+            if "dynamic" in sample:
+                curr_final_ans = "dynamic"
                 break
-        if curr_final_ans is None:
-            # choose the close distance
-            min_dist = math.inf
-            for curr_key in all_keys:
-                curr_dist = Levenshtein.distance(curr_key, curr_ans)
-                if curr_dist < min_dist:
-                    min_dist = curr_dist
-                    curr_final_ans = curr_key
         answers.append(curr_final_ans)
     return answers
 
