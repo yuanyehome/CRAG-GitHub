@@ -642,7 +642,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         else:
             self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
 
-        self.log_direct_answer_once = True
+        self.log_direct_answer_times = 10
 
         self.calculator = CalcAgent(self.max_table_length)
 
@@ -948,10 +948,9 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     is_idk = True
                     break
             if is_idk:
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": "i don't know"
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": "i don't know"}
+                )
                 continue
             is_false_premise = False
             for tmp_ret_answer in all_ret_answers:
@@ -964,10 +963,9 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     is_false_premise = True
                     break
             if is_false_premise:
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": "invalid question"
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": "invalid question"}
+                )
                 continue
             ret_answer = response.outputs[0].text.strip().rstrip()
             try:
@@ -988,10 +986,9 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                 answers[pred_idxs[idx]] = curr_final_answer.strip()
                 pred_to_pop.append(idx)
                 parse_succ += 1
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": True,
-                    "Parsed result": curr_final_answer.strip()
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": True, "Parsed result": curr_final_answer.strip()}
+                )
                 continue
             except:
                 logger.info(
@@ -1000,10 +997,9 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                 logger.info(traceback.format_exc())
                 logger.info(ret_answer)
                 parse_fail += 1
-                all_reasoning_outputs[pred_idxs[idx]].append({
-                    "Parse success": False,
-                    "Parsed result": ""
-                })
+                all_reasoning_outputs[pred_idxs[idx]].append(
+                    {"Parse success": False, "Parsed result": ""}
+                )
                 reasoning_answers.append(ret_answer)
         logger.info(
             "Curr batch:\n\tparse successfully: {}\n\tparse failed: {}".format(
@@ -1108,9 +1104,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         else:
             return answers
 
-    def get_direct_answers(
-        self, queries
-    ) -> list[str]:
+    def get_direct_answers(self, queries) -> list[str]:
         system_prompt = """You are provided with a question.
 Your task is to answer the question with your reasoning process and your confidence of the final answer.
 The confidence should be an integer from 0 to 100, where 0 means you are not confident at all and 100 means you are very confident.
@@ -1199,9 +1193,11 @@ Let's think step by step now!"""
             except:
                 direct_answers.append("i don't know")
         assert len(direct_answers) == len(queries)
-        if self.log_direct_answer_once:
-            self.log_direct_answer_once = False
-            logger.debug(f"Example direct answer: {direct_answers[0]}")
+        if self.log_direct_answer_times > 0:
+            self.log_direct_answer_times -= 1
+            logger.debug(
+                f"Example direct answer {self.log_direct_answer_times}: {direct_answers[0]}"
+            )
         return direct_answers
 
     def format_reasoning_prompts(
@@ -1279,7 +1275,9 @@ Let's think step by step now!"""
                     expression_references += f"{expression}\n"
                 user_message += f"{expression_references}\n------\n\n"
             if direct_answer is not None:
-                user_message += f"# An answer from another agent:\n{direct_answer}\n------\n\n"
+                user_message += (
+                    f"# An answer from another agent:\n{direct_answer}\n------\n\n"
+                )
             user_message += """**Remember your IMPORTANT RULES**:
 - If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
