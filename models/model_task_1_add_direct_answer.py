@@ -1193,6 +1193,7 @@ Let's think step by step now!"""
                 curr_final_answer, curr_confidence = curr_final_answer.split(
                     "### confidence:"
                 )
+                curr_final_answer = curr_final_answer.strip().rstrip()
                 curr_confidence = curr_confidence.strip().rstrip()
                 assert curr_confidence.isdigit()
                 curr_confidence = int(curr_confidence)
