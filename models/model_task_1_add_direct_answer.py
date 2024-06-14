@@ -603,6 +603,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         custom_sentence_embedding=False,
         query_prompt=QUERY_PROMPT,
         include_table_in_text=False,
+        add_direct_answers=False,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -628,6 +629,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         self.custom_sentence_embedding = custom_sentence_embedding
         self.query_prompt = query_prompt
         self.include_table_in_text = include_table_in_text
+        self.add_direct_answers = add_direct_answers
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -666,6 +668,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     "self.custom_sentence_embedding": self.custom_sentence_embedding,
                     "self.query_prompt": self.query_prompt,
                     "self.include_table_in_text": self.include_table_in_text,
+                    "self.add_direct_answers": self.add_direct_answers,
                 },
                 indent=2,
             )
@@ -890,7 +893,10 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             self.llm, queries, batch_retrieval_results, batch_tables
         )
 
-        direct_answers = self.get_direct_answers(queries)
+        if self.add_direct_answers:
+            direct_answers = self.get_direct_answers(queries)
+        else:
+            direct_answers = [None for _ in queries]
 
         reasoning_formatted_prompts = self.format_reasoning_prompts(
             queries,
@@ -1263,7 +1269,8 @@ Let's think step by step now!"""
                     expression_references += f"### Calculation {idx + 1}: \n"
                     expression_references += f"{expression}\n"
                 user_message += f"{expression_references}\n------\n\n"
-            user_message += f"# An answer from another agent:\n{direct_answer}\n------\n\n"
+            if direct_answer is not None:
+                user_message += f"# An answer from another agent:\n{direct_answer}\n------\n\n"
             user_message += """**Remember your IMPORTANT RULES**:
 - If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
