@@ -603,7 +603,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         custom_sentence_embedding=False,
         query_prompt=QUERY_PROMPT,
         include_table_in_text=False,
-        add_direct_answers=False,
+        add_direct_answers=True,
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
