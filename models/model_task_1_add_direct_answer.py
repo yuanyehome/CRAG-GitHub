@@ -54,9 +54,9 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 #### CONFIG PARAMETERS ---
 
 # Define the number of context sentences to consider for generating an answer.
-NUM_CONTEXT_SENTENCES = 5
+NUM_CONTEXT_SENTENCES = 8
 # Set the maximum length for each context sentence (in characters).
-MAX_CONTEXT_SENTENCE_LENGTH = 100
+MAX_CONTEXT_SENTENCE_LENGTH = 200
 
 # Batch size you wish the evaluators will use to call the `batch_generate_answer` function
 AICROWD_SUBMISSION_BATCH_SIZE = 8  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
@@ -596,7 +596,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         return_additional_info: bool = False,
         sentence_model_name: str = "sentence-t5-large",
         use_table_info: bool = True,
-        max_table_length: int = 3000,
+        max_table_length: int = 4000,
         num_context_sentences=NUM_CONTEXT_SENTENCES,
         max_context_sentence_length=MAX_CONTEXT_SENTENCE_LENGTH,
         log_while_inference=False,
@@ -1106,7 +1106,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         system_prompt = """You are provided with a question.
 Your task is to answer the question with your reasoning process.
 If you can't answer it directly based on your knowledge, respond with 'I don't know'.
-If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
 You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
 
@@ -1126,7 +1126,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
         for _idx, query in enumerate(queries):
@@ -1211,7 +1211,7 @@ Your task is to answer the question with your reasoning process.
 There are also some calculation results from another agent, which may be useful for you.
 There is an answer from another agent which may be useful. It can have hallucination. You need to judge it by yourself.
 If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
-If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
 You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
 
@@ -1231,7 +1231,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
         for _idx, query in enumerate(queries):
@@ -1269,7 +1269,7 @@ Let's think step by step now!"""
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!
 """
             user_message += (
