@@ -209,7 +209,7 @@ def predict_static_or_dynamic(
 
 def get_few_shots(dataset_items: list, num_shots: int, key: str):
     few_shots = []
-    few_shots_file_path = f"models/few-shots/{key}-few-shots.jsonl"
+    few_shots_file_path = f"models/few-shots/{key}_few_shots.jsonl"
     if os.path.exists(few_shots_file_path):
         logger.info(f"Found saved few shots in {few_shots_file_path}")
         with open(few_shots_file_path, "r") as f:
