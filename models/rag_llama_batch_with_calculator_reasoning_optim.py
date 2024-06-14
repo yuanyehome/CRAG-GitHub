@@ -1116,7 +1116,7 @@ class OptimBatchRAGModelWithCalculatorReasoning:
 Your task is to answer the question with your reasoning process.
 There are also some calculation results from another agent, which may be useful for you.
 If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
-If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
 You **MUST** generate the reasoning process before the answer. You **MUST** generate your output with the following format:
 
@@ -1136,7 +1136,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
         for _idx, query in enumerate(queries):
@@ -1172,7 +1172,7 @@ Let's think step by step now!"""
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- If you think the premise of the question is wrong, for example, the question asks information about a person's hasband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
+- If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!
 """
             user_message += (
