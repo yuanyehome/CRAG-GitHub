@@ -1110,7 +1110,8 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         self, queries
     ) -> list[str]:
         system_prompt = """You are provided with a question.
-Your task is to answer the question with your reasoning process.
+Your task is to answer the question with your reasoning process and your confidence of the final answer.
+The confidence should be an integer from 0 to 100, where 0 means you are not confident at all and 100 means you are very confident.
 If you can't answer it directly based on your knowledge, respond with 'I don't know'.
 If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
@@ -1125,6 +1126,8 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 ------
 ## Answer:
 <YOUR FINAL ANSWER>
+### Confidence:
+<YOUR CONFIDENCE>
 ===END===
 
 **IMPORTANT RULES**:
@@ -1132,6 +1135,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+- `<YOUR CONFIDENCE>` **MUST** be an integer from 0 to 100, where 0 means you are not confident at all and 100 means you are very confident.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
