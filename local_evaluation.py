@@ -575,7 +575,7 @@ if __name__ == "__main__":
     parser.add_argument("--use-public-test", action="store_true")
     parser.add_argument("--test-ratio", type=float, default=0.2)
     parser.add_argument("--model_size", type=str, choices=["8B", "70B"], default="70B")
-    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--log-dir", type=str)
     parser.add_argument("--local-large-files-path", type=str)
