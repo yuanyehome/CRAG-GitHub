@@ -642,6 +642,8 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         else:
             self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
 
+        self.log_direct_answer_once = True
+
         self.calculator = CalcAgent(self.max_table_length)
 
         # print all configs
@@ -1197,6 +1199,9 @@ Let's think step by step now!"""
             except:
                 direct_answers.append("i don't know")
         assert len(direct_answers) == len(queries)
+        if self.log_direct_answer_once:
+            self.log_direct_answer_once = False
+            logger.debug(f"Example direct answer: {direct_answers[0]}")
         return direct_answers
 
     def format_reasoning_prompts(
