@@ -1198,7 +1198,7 @@ Let's think step by step now!"""
                 assert curr_confidence.isdigit()
                 curr_confidence = int(curr_confidence)
                 assert 0 <= curr_confidence <= 100
-                curr_confidence = (curr_confidence / 100) ** 4
+                curr_confidence = (curr_confidence / 100) ** 4 * 100
                 curr_final_answer = (
                     curr_final_answer
                     + "\n### confidence: {:.2f}".format(curr_confidence)
