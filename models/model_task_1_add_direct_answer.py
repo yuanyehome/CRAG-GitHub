@@ -7,6 +7,7 @@ import ray
 import torch
 import vllm
 import json
+import math
 import trafilatura
 import traceback
 import torch.nn.functional as F
@@ -645,7 +646,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
 
         self.log_direct_answer_times = 10
-        self.log_false_premise_times = 8
+        self.log_false_premise_times = math.inf
 
         self.calculator = CalcAgent(self.max_table_length)
 
