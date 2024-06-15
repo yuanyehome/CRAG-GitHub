@@ -601,7 +601,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--invalid_question_keys",
         type=str,
-        default='[]'
+        default='["none", "never"]'
     )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)

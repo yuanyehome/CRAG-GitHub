@@ -605,7 +605,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         query_prompt=QUERY_PROMPT,
         include_table_in_text=False,
         add_direct_answers=True,
-        invalid_question_keys=[],
+        invalid_question_keys=["none", "never"],
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
