@@ -584,8 +584,8 @@ if __name__ == "__main__":
     parser.add_argument("--sentence_model_name", type=str, default="sentence-t5-large")
     parser.add_argument("--no_use_table_info", action="store_true")
     parser.add_argument("--max_table_length", type=int, default=4000)
-    parser.add_argument("--num_context_sentences", type=int, default=10)
-    parser.add_argument("--max_context_sentence_length", type=int, default=200)
+    parser.add_argument("--num_context_sentences", type=int, default=20)
+    parser.add_argument("--max_context_sentence_length", type=int, default=100)
     parser.add_argument("--case_idxs", type=int, nargs="+")
     parser.add_argument(
         "--idk_attrs",

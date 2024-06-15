@@ -55,9 +55,9 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 #### CONFIG PARAMETERS ---
 
 # Define the number of context sentences to consider for generating an answer.
-NUM_CONTEXT_SENTENCES = 10
+NUM_CONTEXT_SENTENCES = 20
 # Set the maximum length for each context sentence (in characters).
-MAX_CONTEXT_SENTENCE_LENGTH = 200
+MAX_CONTEXT_SENTENCE_LENGTH = 100
 
 # Batch size you wish the evaluators will use to call the `batch_generate_answer` function
 AICROWD_SUBMISSION_BATCH_SIZE = 8  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
@@ -1252,6 +1252,8 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 <YOUR REASONING>
 - What is the final answer?
 <YOUR REASONING>
+- Can you answer it based on current knowledge?
+<YOUR REASONING>
 ------
 ## Answer:
 <YOUR FINAL ANSWER>
@@ -1261,7 +1263,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 
 **IMPORTANT RULES**:
 - If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
-- You **MUST** be very careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them. You **MUST NOT** use the references that are not about the question (for example, the wrong year or object).
+- You **MUST** be **VERY** careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them. You **MUST NOT** use the references that are not about the question (for example, the wrong year or object).
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
@@ -1303,19 +1305,20 @@ Let's think step by step now!"""
                     f"# An answer from another agent:\n{direct_answer}\n------\n\n"
                 )
             user_message += """**Remember your IMPORTANT RULES**:
-- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** be careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them.
+- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+- You **MUST** be **VERY** careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them. You **MUST NOT** use the references that are not about the question (for example, the wrong year or object).
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
 - `<HAS_FALSE_PREMISE_OR_NOT>` should be "yes" if the question is invalid, and "no" otherwise. It can **ONLY** be chosen from these two options.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
-Let's think step by step now!
 """
             user_message += (
                 f"Using the references listed above, answer the following question: \n"
             )
             user_message += f"Current Time: {query_time}\n"
             user_message += f"Question: {query}\n"
+            user_message += "Let's think step by step now!\n"
             formatted_prompts.append(
                 self.tokenizer.apply_chat_template(
                     [
