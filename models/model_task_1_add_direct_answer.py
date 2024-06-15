@@ -643,6 +643,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
 
         self.log_direct_answer_times = 10
+        self.log_false_premise_times = 8
 
         self.calculator = CalcAgent(self.max_table_length)
 
@@ -978,6 +979,23 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                 curr_final_answer = (
                     curr_final_answer.split("===end===")[0].strip().rstrip()
                 )
+
+                assert "## false premise:" in curr_final_answer
+                curr_final_answer, false_premise = curr_final_answer.split(
+                    "## false premise:"
+                )
+                curr_final_answer = curr_final_answer.strip().rstrip()
+                false_premise = false_premise.strip().rstrip().lower()
+                if self.log_false_premise_times:
+                    self.log_false_premise_times -= 1
+                    logger.debug(json.dumps({
+                        "log times left": self.log_false_premise_times,
+                        "curr_final_answer": curr_final_answer,
+                        "false_premise": false_premise
+                    }))
+                if false_premise in ["yes", "true", "1"]:
+                    curr_final_answer = "invalid question"
+
                 assert len(curr_final_answer) < 300
                 if "invalid question" in curr_final_answer.lower() or (
                     curr_final_answer.lower() in ["none", "never"]
@@ -1231,6 +1249,8 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 ------
 ## Answer:
 <YOUR FINAL ANSWER>
+## False Premise:
+<HAS_FALSE_PREMISE_OR_NOT>
 ===END===
 
 **IMPORTANT RULES**:
@@ -1238,6 +1258,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+- `<HAS_FALSE_PREMISE_OR_NOT>` should be "yes" if the question is invalid, and "no" otherwise. It can **ONLY** be chosen from these two options.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
@@ -1279,6 +1300,7 @@ Let's think step by step now!"""
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
+- `<HAS_FALSE_PREMISE_OR_NOT>` should be "yes" if the question is invalid, and "no" otherwise. It can **ONLY** be chosen from these two options.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!
 """
