@@ -262,6 +262,11 @@ class AttrPredictor:
         self.static_dynamic_few_shots = get_few_shots(
             self.valid_dataset_items, 10, "static_or_dynamic"
         )
+        logger.info(
+            "Static or dynamic few shots: {}".format(
+                json.dumps(self.static_dynamic_few_shots, indent=2)
+            )
+        )
 
     def predict_attr(self, batch: list, attr_name: str) -> list[str]:
         assert attr_name in ["domain", "question_type", "static_or_dynamic"]
