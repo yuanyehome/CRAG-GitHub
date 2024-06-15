@@ -1106,8 +1106,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
 
     def get_direct_answers(self, queries) -> list[str]:
         system_prompt = """You are provided with a question.
-Your task is to answer the question with your reasoning process and your confidence of the final answer.
-The confidence should be an integer from 0 to 100, where 0 means you are not confident at all and 100 means you are very confident.
+Your task is to answer the question with your reasoning process.
 If you can't answer it directly based on your knowledge, respond with 'I don't know'.
 If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
@@ -1122,8 +1121,6 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 ------
 ## Answer:
 <YOUR FINAL ANSWER>
-### Confidence:
-<YOUR CONFIDENCE>
 ===END===
 
 **IMPORTANT RULES**:
@@ -1131,7 +1128,6 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- `<YOUR CONFIDENCE>` **MUST** be an integer from 0 to 100, where 0 means you are not confident at all and 100 means you are very confident.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
@@ -1189,20 +1185,6 @@ Let's think step by step now!"""
                 ):
                     direct_answers.append("invalid question")
                     continue
-                assert "### confidence:" in curr_final_answer.lower()
-                curr_final_answer, curr_confidence = curr_final_answer.split(
-                    "### confidence:"
-                )
-                curr_final_answer = curr_final_answer.strip().rstrip()
-                curr_confidence = curr_confidence.strip().rstrip()
-                assert curr_confidence.isdigit()
-                curr_confidence = int(curr_confidence)
-                assert 0 <= curr_confidence <= 100
-                curr_confidence = (curr_confidence / 100) ** 4 * 100
-                curr_final_answer = (
-                    curr_final_answer
-                    + "\n### confidence: {:.2f}".format(curr_confidence)
-                )
                 direct_answers.append(curr_final_answer.strip())
             except:
                 direct_answers.append("i don't know")
@@ -1234,7 +1216,7 @@ Let's think step by step now!"""
         system_prompt = """You are provided with a question and various references.
 Your task is to answer the question with your reasoning process.
 There are also some calculation results from another agent, which may be useful for you.
-There is an answer from another agent which may be useful. The answer will include a confidence ranging from 0 to 100, where 0 means it is not confident at all and 100 means it is very confident. It may have hallucination. You need to judge whether to trust it by yourself.
+There is an answer from another agent which may be useful. It may have hallucination. You need to judge whether to trust it by yourself.
 If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
 If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 You **MUST** think if the question has a false premise, then think the final answer.
