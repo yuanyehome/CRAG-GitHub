@@ -1234,7 +1234,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 ===END===
 
 **IMPORTANT RULES**:
-- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** be careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them.
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
@@ -1275,7 +1275,7 @@ Let's think step by step now!"""
                     f"# An answer from another agent:\n{direct_answer}\n------\n\n"
                 )
             user_message += """**Remember your IMPORTANT RULES**:
-- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'.
+- If the references do not contain the necessary information to answer the question and you can't answer it directly based on your knowledge, respond with 'I don't know'. You **MUST** be careful about the **TIME** and **EVENT** in the references, and make sure they are about the question before you use them.
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
