@@ -598,8 +598,14 @@ if __name__ == "__main__":
         type=str,
         default="",
     )
+    parser.add_argument(
+        "--invalid_question_keys",
+        type=str,
+        default='["none", "never"]'
+    )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)
+    args.invalid_question_keys = json.loads(args.invalid_question_keys)
     if args.log_dir:
         LOG_DIR = args.log_dir
         os.makedirs(LOG_DIR, exist_ok=True)
@@ -646,6 +652,7 @@ if __name__ == "__main__":
         log_while_inference=False,
         query_prompt=args.query_prompt,
         include_table_in_text=args.include_table_in_text,
+        invalid_question_keys=args.invalid_question_keys,
     )
     if participant_model.attr_predictor is not None:
         save_few_shots(

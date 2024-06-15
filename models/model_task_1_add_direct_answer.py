@@ -604,6 +604,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         query_prompt=QUERY_PROMPT,
         include_table_in_text=False,
         add_direct_answers=True,
+        invalid_question_keys=["none", "never"],
     ):
         self.batch_size = batch_size
         self.nprocs = nprocs
@@ -630,6 +631,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         self.query_prompt = query_prompt
         self.include_table_in_text = include_table_in_text
         self.add_direct_answers = add_direct_answers
+        self.invalid_question_keys = invalid_question_keys
         self.initialize_models()
         self.attr_predictor = None
         if self.idk_attrs is not None:
@@ -672,6 +674,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     "self.query_prompt": self.query_prompt,
                     "self.include_table_in_text": self.include_table_in_text,
                     "self.add_direct_answers": self.add_direct_answers,
+                    "self.invalid_question_keys": self.invalid_question_keys,
                 },
                 indent=2,
             )
@@ -956,7 +959,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             is_false_premise = False
             for tmp_ret_answer in all_ret_answers:
                 if "invalid question" in tmp_ret_answer.lower() or (
-                    tmp_ret_answer.lower() in ["none", "never"]
+                    tmp_ret_answer.lower() in self.invalid_question_keys
                 ):
                     tmp_ret_answer = "invalid question"
                     answers[pred_idxs[idx]] = tmp_ret_answer
@@ -998,7 +1001,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
 
                 assert len(curr_final_answer) < 300
                 if "invalid question" in curr_final_answer.lower() or (
-                    curr_final_answer.lower() in ["none", "never"]
+                    curr_final_answer.lower() in self.invalid_question_keys
                 ):
                     curr_final_answer = "invalid question"
                 answers[pred_idxs[idx]] = curr_final_answer.strip()
@@ -1086,7 +1089,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
             if "i do not know" in ret_answer.lower():
                 ret_answer = "I don't know."
             if "invalid question" in ret_answer.lower() or (
-                ret_answer.lower() in ["none", "never"]
+                ret_answer.lower() in self.invalid_question_keys
             ):
                 ret_answer = "invalid question"
             answers[pred_idxs[idx]] = ret_answer.strip()
@@ -1180,7 +1183,7 @@ Let's think step by step now!"""
                 direct_answers.append(response_text)
                 continue
             if "invalid question" in response_text.lower() or (
-                response_text.lower() in ["none", "never"]
+                response_text.lower() in self.invalid_question_keys
             ):
                 response_text = "invalid question"
                 direct_answers.append(response_text)
@@ -1199,7 +1202,7 @@ Let's think step by step now!"""
                     direct_answers.append("i don't know")
                     continue
                 if "invalid question" in curr_final_answer.lower() or (
-                    curr_final_answer.lower() in ["none", "never"]
+                    curr_final_answer.lower() in self.invalid_question_keys
                 ):
                     direct_answers.append("invalid question")
                     continue
