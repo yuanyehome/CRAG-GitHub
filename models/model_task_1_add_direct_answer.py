@@ -994,9 +994,11 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     self.log_false_premise_times -= 1
                     logger.debug(json.dumps({
                         "log times left": self.log_false_premise_times,
+                        "query": queries[idx],
+                        "raw ret_answer": ret_answer,
                         "curr_final_answer": curr_final_answer,
                         "false_premise": false_premise
-                    }))
+                    }, indent=2))
                 if false_premise in ["yes", "true", "1"]:
                     curr_final_answer = "invalid question"
 
