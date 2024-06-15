@@ -1262,7 +1262,7 @@ You **MUST** generate the reasoning process before the answer. You **MUST** gene
 - Your generation **MUST** starts with "===START===" and ends with "===END===".
 - `<YOUR FINAL ANSWER>` should be succinct, and use as few words as possible.
 - `<YOUR REASONING>` should be a detailed reasoning process that explains how you arrived at your answer.
-- `<HAS_FALSE_PREMISE_OR_NOT>` should be "yes" if the question is invalid, and "no" otherwise. It can **ONLY** be chosen from these two options.
+- `<HAS_FALSE_PREMISE_OR_NOT>` should be "yes" if the premise is wrong and the question is invalid, and "no" otherwise. It can **ONLY** be chosen from these two options.
 - If you think the premise of the question is wrong, for example, the question asks information about a person's husband, but you are sure that the person doesn't have one, you should answer with "Invalid question" without any other words.
 Let's think step by step now!"""
         formatted_prompts = []
