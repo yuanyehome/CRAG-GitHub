@@ -55,7 +55,6 @@ Entity_Extract_TEMPLATE = """
 You are given a Query and Query Time. Do the following: 
 
 1) Determine the domain the query is about. The domain should be one of the following: "finance", "sports", "music", "movie", "encyclopedia". If none of the domain applies, use "other". Use "domain" as the key in the result json. 
-
 2) Extract structured information from the query. Include different keys into the result json depending on the domains, amd put them DIRECTLY in the result json. Here are the rules:
 
 For `encyclopedia` and `other` queries, these are possible keys:
