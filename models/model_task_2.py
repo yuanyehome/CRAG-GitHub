@@ -1477,6 +1477,7 @@ Let's think step by step now!"""
                     kg_references += f"### KG Ref {idx + 1}: \n"
                     kg_references += f"{kg_result}\n"
                 user_message += f"{kg_references}\n------\n\n"
+                logger.debug("Currect KG references:\n{}".format(kg_references))
             if len(related_tables) > 0:
                 table_references = ""
                 user_message += "## Table references \n"
