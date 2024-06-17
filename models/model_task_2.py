@@ -1093,9 +1093,15 @@ class KGRAGModel:
             direct_answers = [None for _ in queries]
 
         entities = self.extract_entity(queries, query_times)
+        logger.info(
+            "Time for entity extraction: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
         batch_kg_results = self.get_kg_results(entities)
         logger.info(
-            "Time for entity extraction and KG retrieval: {:.2f}s".format(
+            "Time for KG retrieval: {:.2f}s".format(
                 time.perf_counter() - curr_start_time
             )
         )
