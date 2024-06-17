@@ -842,7 +842,7 @@ class KGRAGModel:
                 top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
                 temperature=0.1,  # Randomness of the sampling
                 skip_special_tokens=True,  # Whether to skip special tokens in the output.
-                max_tokens=4096,  # Maximum number of tokens to generate per output sequence.
+                max_tokens=512,  # Maximum number of tokens to generate per output sequence.
             ),
             use_tqdm=False,  # you might consider setting this to True during local development
         )
