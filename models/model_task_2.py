@@ -11,6 +11,7 @@ import math
 import trafilatura
 import traceback
 import torch.nn.functional as F
+import time
 from json import JSONDecoder
 from loguru import logger
 from blingfire import text_to_sentences_and_offsets
@@ -981,6 +982,7 @@ class KGRAGModel:
         queries = batch["query"]
         batch_search_results = batch["search_results"]
         query_times = batch["query_time"]
+        curr_start_time = time.perf_counter()
 
         # Chunk all search results using ChunkExtractor
         if self.use_table_info:
@@ -1038,6 +1040,12 @@ class KGRAGModel:
             # use a vectorDB directly.
             batch_retrieval_results.append(retrieval_results)
             batch_tables.append(relevant_tables)
+        logger.info(
+            "Time for HTML processing: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
 
         answers = [None for _ in queries]
         reasoning_prompts = [None for _ in queries]
@@ -1063,6 +1071,12 @@ class KGRAGModel:
             for idk_idx in idk_idxs:
                 answers[idk_idx] = "I don't know."
                 pred_idxs.remove(idk_idx)
+        logger.info(
+            "Time for attribute prediction: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
 
         queries = [queries[idx] for idx in pred_idxs]
         query_times = [query_times[idx] for idx in pred_idxs]
@@ -1080,6 +1094,12 @@ class KGRAGModel:
 
         entities = self.extract_entity(queries, query_times)
         batch_kg_results = self.get_kg_results(entities)
+        logger.info(
+            "Time for entity extraction and KG retrieval: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
 
         reasoning_formatted_prompts = self.format_reasoning_prompts(
             queries,
@@ -1213,6 +1233,10 @@ class KGRAGModel:
                 parse_succ, parse_fail
             )
         )
+        logger.info(
+            "Time for reasoning: {:.2f}s".format(time.perf_counter() - curr_start_time)
+        )
+        curr_start_time = time.perf_counter()
         pred_idxs = [
             pred_idxs[idx] for idx in range(len(pred_idxs)) if idx not in pred_to_pop
         ]
@@ -1298,6 +1322,11 @@ class KGRAGModel:
             else:
                 prompt_lens_final.append(0)
                 formatted_prompts_final.append("")
+        logger.info(
+            "Time for final generation: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
 
         if self.return_additional_info:
             return answers, {
@@ -1476,6 +1505,7 @@ Let's think step by step now!"""
                 for idx, kg_result in enumerate(kg_results):
                     kg_references += f"### KG Ref {idx + 1}: \n"
                     kg_references += f"{kg_result}\n"
+                kg_references = kg_references[:1000]
                 user_message += f"{kg_references}\n------\n\n"
                 logger.debug("Currect KG references:\n{}".format(kg_references))
             if len(related_tables) > 0:
