@@ -1099,7 +1099,7 @@ class KGRAGModel:
             )
         )
         curr_start_time = time.perf_counter()
-        logger.debug("Entities:\n" + entities)
+        logger.debug("Entities: {}".format(json.dumps(entities)))
         batch_kg_results = self.get_kg_results(entities)
         logger.info(
             "Time for KG retrieval: {:.2f}s".format(
