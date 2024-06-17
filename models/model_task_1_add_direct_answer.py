@@ -55,9 +55,9 @@ CRAG_MOCK_API_URL = os.getenv("CRAG_MOCK_API_URL", "http://localhost:8000")
 #### CONFIG PARAMETERS ---
 
 # Define the number of context sentences to consider for generating an answer.
-NUM_CONTEXT_SENTENCES = 20
+NUM_CONTEXT_SENTENCES = 5
 # Set the maximum length for each context sentence (in characters).
-MAX_CONTEXT_SENTENCE_LENGTH = 100
+MAX_CONTEXT_SENTENCE_LENGTH = 400
 
 # Batch size you wish the evaluators will use to call the `batch_generate_answer` function
 AICROWD_SUBMISSION_BATCH_SIZE = 8  # TUNE THIS VARIABLE depending on the number of GPUs you are requesting and the size of your model.
