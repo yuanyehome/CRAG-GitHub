@@ -1086,11 +1086,23 @@ class KGRAGModel:
         calculation_results: list[list[str]] = self.calculator.get_calculation_results(
             self.llm, queries, batch_retrieval_results, batch_tables
         )
+        logger.info(
+            "Time for calculation_results: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
 
         if self.add_direct_answers:
             direct_answers = self.get_direct_answers(queries)
         else:
             direct_answers = [None for _ in queries]
+        logger.info(
+            "Time for direct_answers: {:.2f}s".format(
+                time.perf_counter() - curr_start_time
+            )
+        )
+        curr_start_time = time.perf_counter()
 
         entities = self.extract_entity(queries, query_times)
         logger.info(
