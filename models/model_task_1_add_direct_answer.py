@@ -11,6 +11,8 @@ import math
 import trafilatura
 import traceback
 import torch.nn.functional as F
+from json import JSONDecoder
+from typing import Optional
 from loguru import logger
 from blingfire import text_to_sentences_and_offsets
 from bs4 import BeautifulSoup
@@ -111,128 +113,15 @@ def is_question(sentence: str):
     )
 
 
-class ChunkExtractor:
-    def __init__(self, max_context_sentence_length):
-        self.max_context_sentence_length = max_context_sentence_length
-
-    @ray.remote
-    def _extract_chunks(self, interaction_id, html_source, html_snippet):
-        """
-        Extracts and returns chunks from given HTML source.
-
-        Note: This function is for demonstration purposes only.
-        We are treating an independent sentence as a chunk here,
-        but you could choose to chunk your text more cleverly than this.
-
-        Parameters:
-            interaction_id (str): Interaction ID that this HTML source belongs to.
-            html_source (str): HTML content from which to extract text.
-
-        Returns:
-            Tuple[str, List[str]]: A tuple containing the interaction ID and a list of sentences extracted from the HTML content.
-        """
-        # Parse the HTML content using BeautifulSoup
-        text = trafilatura.extract(html_source, favor_precision=True, deduplicate=True)
-        if text is None:
-            soup = BeautifulSoup(html_source, "lxml")
-            text = soup.get_text(
-                " ", strip=True
-            )  # Use space as a separator, strip whitespaces
-        text.replace("\n", " ").replace("\t", " ").replace("\r", " ")
-        text = text.strip()
-        text = " ".join(text.split())
-
-        if not text:
-            # Return a list with empty string when no text is extracted
-            return interaction_id, [""]
-
-        # Extract offsets of sentences from the text
-        _, offsets = text_to_sentences_and_offsets(text)
-
-        # Initialize a list to store sentences
-        chunks = []
-
-        # Iterate through the list of offsets and extract sentences
-        for start, end in offsets:
-            # Extract the sentence and limit its length
-            sentence = text[start:end]
-            while len(sentence) > self.max_context_sentence_length:
-                chunks.append(sentence[: self.max_context_sentence_length])
-                sentence = sentence[self.max_context_sentence_length :]
-            else:
-                if is_question(sentence):
-                    chunks.append(
-                        "{} {}".format(
-                            sentence, text[end : end + self.max_context_sentence_length]
-                        )
-                    )
-                else:
-                    chunks.append(sentence)
-
-        return interaction_id, chunks
-
-    def extract_chunks(self, batch_interaction_ids, batch_search_results):
-        """
-        Extracts chunks from given batch search results using parallel processing with Ray.
-
-        Parameters:
-            batch_interaction_ids (List[str]): List of interaction IDs.
-            batch_search_results (List[List[Dict]]): List of search results batches, each containing HTML text.
-
-        Returns:
-            Tuple[np.ndarray, np.ndarray]: A tuple containing an array of chunks and an array of corresponding interaction IDs.
-        """
-        # Setup parallel chunk extraction using ray remote
-        ray_response_refs = [
-            self._extract_chunks.remote(
-                self,
-                interaction_id=batch_interaction_ids[idx],
-                html_source=html_text["page_result"],
-                html_snippet=html_text["page_snippet"],
-            )
-            for idx, search_results in enumerate(batch_search_results)
-            for html_text in search_results
-        ]
-
-        # Wait until all sentence extractions are complete
-        # and collect chunks for every interaction_id separately
-        chunk_dictionary = defaultdict(list)
-
-        for response_ref in ray_response_refs:
-            interaction_id, _chunks = ray.get(
-                response_ref
-            )  # Blocking call until parallel execution is complete
-            chunk_dictionary[interaction_id].extend(_chunks)
-
-        # Flatten chunks and keep a map of corresponding interaction_ids
-        chunks, chunk_interaction_ids = self._flatten_chunks(chunk_dictionary)
-
-        return chunks, chunk_interaction_ids
-
-    def _flatten_chunks(self, chunk_dictionary):
-        """
-        Flattens the chunk dictionary into separate lists for chunks and their corresponding interaction IDs.
-
-        Parameters:
-            chunk_dictionary (defaultdict): Dictionary with interaction IDs as keys and lists of chunks as values.
-
-        Returns:
-            Tuple[np.ndarray, np.ndarray]: A tuple containing an array of chunks and an array of corresponding interaction IDs.
-        """
-        chunks = []
-        chunk_interaction_ids = []
-
-        for interaction_id, _chunks in chunk_dictionary.items():
-            # De-duplicate chunks within the scope of an interaction ID
-            unique_chunks = list(set(_chunks))
-            chunks.extend(unique_chunks)
-            chunk_interaction_ids.extend([interaction_id] * len(unique_chunks))
-
-        # Convert to numpy arrays for convenient slicing/masking operations later
-        chunks = np.array(chunks)
-        chunk_interaction_ids = np.array(chunk_interaction_ids)
-
-        return chunks, chunk_interaction_ids
+def extract_json_objects(text, decoder=JSONDecoder()):
+    """Find JSON objects in text, and yield the decoded JSON data"""
+    result = None
+    match = text.find("{", 0)
+    try:
+        result, _ = decoder.raw_decode(text[match:])
+    except ValueError:
+        pass
+    return result
 
 
 class ChunkTableExtractor:
@@ -241,7 +130,13 @@ class ChunkTableExtractor:
 
     @ray.remote
     def _extract_chunks(
-        self, interaction_id, html_source, html_snippet, html_name, include_tables
+        self,
+        interaction_id,
+        curr_entities: Optional[dict],
+        html_source,
+        html_snippet,
+        html_name,
+        include_tables,
     ):
         """
         Extracts and returns chunks from given HTML source.
@@ -309,30 +204,38 @@ class ChunkTableExtractor:
                 final_chunks.append(" ".join(curr_sent))
                 curr_sent = [sent]
         if len(curr_sent) > 0:
-            final_chunks.append(" ".join(curr_sent))
+            curr_final_chunk = " ".join(curr_sent)
+            add_flag = False
+            if curr_entities is not None:
+                main_entities = curr_entities.get("main_entities", [])
+                time_entity = curr_entities.get("time", None)
+                if time_entity is not None:
+                    main_entities.append(time_entity)
+                if len(main_entities) > 0:
+                    for ent in main_entities:
+                        if ent in curr_final_chunk:
+                            add_flag = True
+                            break
+            if add_flag:
+                final_chunks.append(curr_final_chunk)
 
         tables = get_tables(clean_html(html_source), html_name)
 
         return interaction_id, final_chunks, tables
 
     def extract_chunks(
-        self, batch_interaction_ids, batch_search_results, include_tables
+        self,
+        batch_interaction_ids,
+        batch_search_results,
+        include_tables,
+        extracted_entities,
     ):
-        """
-        Extracts chunks from given batch search results using parallel processing with Ray.
-
-        Parameters:
-            batch_interaction_ids (List[str]): List of interaction IDs.
-            batch_search_results (List[List[Dict]]): List of search results batches, each containing HTML text.
-
-        Returns:
-            Tuple[np.ndarray, np.ndarray]: A tuple containing an array of chunks and an array of corresponding interaction IDs.
-        """
         # Setup parallel chunk extraction using ray remote
         ray_response_refs = [
             self._extract_chunks.remote(
                 self,
                 interaction_id=batch_interaction_ids[idx],
+                curr_entities=extracted_entities[idx],
                 html_source=html_text["page_result"],
                 html_snippet=html_text["page_snippet"],
                 html_name=html_text["page_name"],
@@ -643,7 +546,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         if self.use_table_info:
             self.chunk_extractor = ChunkTableExtractor(self.max_context_sentence_length)
         else:
-            self.chunk_extractor = ChunkExtractor(self.max_context_sentence_length)
+            raise NotImplementedError("Table info is required for this model.")
 
         self.log_direct_answer_times = 10
         self.log_false_premise_times = math.inf
@@ -780,6 +683,61 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         """
         return self.batch_size
 
+    def extract_entities(self, queries: list[str]) -> list[Optional[dict[str, str]]]:
+        system_prompt = """
+You are a helpful assistant in extracting entities of a question. Your task is to extract the main entities from a given question. Here are the rules:
+
+1. `main entities`: You need to extract the main entities from the question as a list.
+2. `time`: If the question have time condition, extract the time, else just return None.
+3. All your output **MUST** be JSON format, and can be load from `json.loads`.
+
+Here are examples:
+
+# Example 1
+Query: which movie won the oscar best visual effects in 2021?
+Output: {"main_entities": ["movie", "oscar", "visual effects"], "time": "2021"}
+
+# Example 2
+Query: on which date did sgml distribute dividends the first time?
+Output: {"main_entities": ["date", "sgml", "dividends"], "time": null}
+
+**NEVER include ANY EXPLANATION or NOTE in the output, ONLY OUTPUT JSON**
+"""
+        formatted_prompts = []
+        for query in queries:
+            user_message = (
+                f"Query: {query}\nExtract the main entities from the question: \n"
+            )
+            formatted_prompts.append(
+                self.llm.get_tokenizer().apply_chat_template(
+                    [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message},
+                    ],
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            )
+        entities_output = self.llm.generate(
+            formatted_prompts,
+            vllm.SamplingParams(
+                n=1,  # Number of output sequences to return for each prompt.
+                top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
+                temperature=0.05,  # Randomness of the sampling
+                skip_special_tokens=True,  # Whether to skip special tokens in the output.
+                max_tokens=200,  # Maximum number of tokens to generate per output sequence.
+            ),
+            use_tqdm=False,  # you might consider setting this to True during local development
+        )
+        output_entities = []
+        for response in entities_output:
+            try:
+                output_entities.append(json.loads(response.outputs[0].text))
+                continue
+            except:
+                output_entities.append(extract_json_objects(response.outputs[0].text))
+        return output_entities
+
     def batch_generate_answer(self, batch: Dict[str, Any]) -> List[str]:
         """
         Generates answers for a batch of queries using associated (pre-cached) search results and query times.
@@ -808,6 +766,7 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
         queries = batch["query"]
         batch_search_results = batch["search_results"]
         query_times = batch["query_time"]
+        extracted_entities = self.extract_entities(queries)
 
         # Chunk all search results using ChunkExtractor
         if self.use_table_info:
@@ -816,13 +775,11 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                     batch_interaction_ids,
                     batch_search_results,
                     include_tables=self.include_table_in_text,
+                    extracted_entities=extracted_entities,
                 )
             )
         else:
-            chunks, chunk_interaction_ids = self.chunk_extractor.extract_chunks(
-                batch_interaction_ids, batch_search_results
-            )
-            tables = []
+            raise NotImplementedError("Table info is required for this model.")
 
         # Calculate all chunk embeddings
         chunk_embeddings = self.calculate_embeddings(chunks)
@@ -992,13 +949,18 @@ class OptimBatchRAGModelWithCalculatorReasoningDirectAnswer:
                 false_premise = false_premise.strip().rstrip().lower()
                 if self.log_false_premise_times:
                     self.log_false_premise_times -= 1
-                    logger.debug(json.dumps({
-                        "log times left": self.log_false_premise_times,
-                        "query": queries[idx],
-                        "raw ret_answer": ret_answer,
-                        "curr_final_answer": curr_final_answer,
-                        "false_premise": false_premise
-                    }, indent=2))
+                    logger.debug(
+                        json.dumps(
+                            {
+                                "log times left": self.log_false_premise_times,
+                                "query": queries[idx],
+                                "raw ret_answer": ret_answer,
+                                "curr_final_answer": curr_final_answer,
+                                "false_premise": false_premise,
+                            },
+                            indent=2,
+                        )
+                    )
                 if false_premise in ["yes", "true", "1"]:
                     curr_final_answer = "invalid question"
 
