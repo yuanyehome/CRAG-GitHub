@@ -214,8 +214,9 @@ class ChunkTableExtractor:
                         if ent in curr_final_chunk:
                             add_flag = True
                             break
-                if time_entity is not None and time_entity not in curr_final_chunk:
-                    add_flag = False
+                if time_entity is not None and type(time_entity) == str:
+                    if time_entity not in curr_final_chunk:
+                        add_flag = False
             if add_flag:
                 final_chunks.append(curr_final_chunk)
 
