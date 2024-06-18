@@ -153,6 +153,7 @@ class ChunkTableExtractor:
             Tuple[str, List[str]]: A tuple containing the interaction ID and a list of sentences extracted from the HTML content.
         """
         # Parse the HTML content using BeautifulSoup
+        logger.info("Curr entities: {}".format(json.dumps(curr_entities, indent=2)))
         text = trafilatura.extract(
             html_source,
             favor_precision=True,
