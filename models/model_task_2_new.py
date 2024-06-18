@@ -897,7 +897,7 @@ Remember your rules:
                     curr_function_call["function_result"] = str(function_result)[:200]
                     curr_function_calls.add(json.dumps(curr_function_call))
                 except:
-                    logger.debug(traceback.format_exc())
+                    logger.warning(traceback.format_exc())
             function_calls.append(list(curr_function_calls))
         return function_calls
                     
