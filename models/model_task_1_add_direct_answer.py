@@ -209,13 +209,13 @@ class ChunkTableExtractor:
             if curr_entities is not None:
                 main_entities = curr_entities.get("main_entities", [])
                 time_entity = curr_entities.get("time", None)
-                if time_entity is not None:
-                    main_entities.append(time_entity)
                 if len(main_entities) > 0:
                     for ent in main_entities:
                         if ent in curr_final_chunk:
                             add_flag = True
                             break
+                if time_entity is not None and time_entity not in curr_final_chunk:
+                    add_flag = False
             if add_flag:
                 final_chunks.append(curr_final_chunk)
 
