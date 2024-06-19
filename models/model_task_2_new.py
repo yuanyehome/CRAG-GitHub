@@ -895,6 +895,8 @@ Remember your rules:
                     continue
                 try:
                     for curr_function_call in curr_function_call_list:
+                        if type(curr_function_call) == list:
+                            curr_function_call = curr_function_call[0]
                         function_name = curr_function_call["function_name"]
                         function_args = curr_function_call["args"]
                         function_func = eval(f"self.api.{function_name}")
