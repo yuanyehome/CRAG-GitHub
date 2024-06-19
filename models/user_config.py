@@ -20,11 +20,11 @@ from functools import partial
 # UserModel = BatchRAGModelCustom
 
 # UserModel = OptimBatchRAGModelWithCalculatorReasoning
-UserModel = OptimBatchRAGModelWithCalculatorReasoningDirectAnswer
+# UserModel = OptimBatchRAGModelWithCalculatorReasoningDirectAnswer
 # UserModel = BatchRAGModelWithCalculator
 # UserModel = ParagraphBatchRAGModelWithCalculatorReasoning
 
-# UserModel = KGToolRAGModel
+UserModel = KGToolRAGModel
 
 ##############################################
 # UserModel = partial(CustomRAGModel, model="llama3-8b-groq")
