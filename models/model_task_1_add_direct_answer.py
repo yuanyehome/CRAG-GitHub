@@ -195,30 +195,40 @@ class ChunkTableExtractor:
                 else:
                     chunks.append(sentence)
 
+        def process_sents(sents: list[str]):
+            if len(sents) > 0:
+                curr_final_chunk = " ".join(sents)
+                add_flag = False
+                if curr_entities is None:
+                    add_flag = True
+                else:
+                    main_entities = curr_entities.get("main_entities", [])
+                    time_entity = curr_entities.get("time", None)
+                    if len(main_entities) > 0:
+                        for ent in main_entities:
+                            if ent in curr_final_chunk:
+                                add_flag = True
+                                break
+                    if time_entity is not None and type(time_entity) == str:
+                        if time_entity not in curr_final_chunk:
+                            add_flag = False
+                if add_flag:
+                    return curr_final_chunk
+            return None
+
         final_chunks = [html_snippet]
         curr_sent = []
         for sent in chunks:
             if len(curr_sent) < 3:
                 curr_sent.append(sent)
             else:
-                final_chunks.append(" ".join(curr_sent))
+                curr_final_chunk = process_sents(curr_sent)
+                if curr_final_chunk is not None:
+                    final_chunks.append(curr_final_chunk)
                 curr_sent = [sent]
-        if len(curr_sent) > 0:
-            curr_final_chunk = " ".join(curr_sent)
-            add_flag = False
-            if curr_entities is not None:
-                main_entities = curr_entities.get("main_entities", [])
-                time_entity = curr_entities.get("time", None)
-                if len(main_entities) > 0:
-                    for ent in main_entities:
-                        if ent in curr_final_chunk:
-                            add_flag = True
-                            break
-                if time_entity is not None and type(time_entity) == str:
-                    if time_entity not in curr_final_chunk:
-                        add_flag = False
-            if add_flag:
-                final_chunks.append(curr_final_chunk)
+        curr_final_chunk = process_sents(curr_sent)
+        if curr_final_chunk is not None:
+            final_chunks.append(curr_final_chunk)
 
         tables = get_tables(clean_html(html_source), html_name)
 

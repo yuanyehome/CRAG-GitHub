@@ -12,6 +12,7 @@ import trafilatura
 import traceback
 import torch.nn.functional as F
 import time
+from typing import Optional
 from json import JSONDecoder
 from loguru import logger
 from blingfire import text_to_sentences_and_offsets
@@ -274,7 +275,13 @@ class ChunkTableExtractor:
 
     @ray.remote
     def _extract_chunks(
-        self, interaction_id, html_source, html_snippet, html_name, include_tables
+        self,
+        interaction_id,
+        curr_entities: Optional[dict],
+        html_source,
+        html_snippet,
+        html_name,
+        include_tables,
     ):
         """
         Extracts and returns chunks from given HTML source.
@@ -333,23 +340,51 @@ class ChunkTableExtractor:
                 else:
                     chunks.append(sentence)
 
+        def process_sents(sents: list[str]):
+            if len(sents) > 0:
+                curr_final_chunk = " ".join(sents)
+                add_flag = False
+                if curr_entities is None:
+                    add_flag = True
+                else:
+                    main_entities = curr_entities.get("main_entities", [])
+                    time_entity = curr_entities.get("time", None)
+                    if len(main_entities) > 0:
+                        for ent in main_entities:
+                            if ent in curr_final_chunk:
+                                add_flag = True
+                                break
+                    if time_entity is not None and type(time_entity) == str:
+                        if time_entity not in curr_final_chunk:
+                            add_flag = False
+                if add_flag:
+                    return curr_final_chunk
+            return None
+
         final_chunks = [html_snippet]
         curr_sent = []
         for sent in chunks:
             if len(curr_sent) < 3:
                 curr_sent.append(sent)
             else:
-                final_chunks.append(" ".join(curr_sent))
+                curr_final_chunk = process_sents(curr_sent)
+                if curr_final_chunk is not None:
+                    final_chunks.append(curr_final_chunk)
                 curr_sent = [sent]
-        if len(curr_sent) > 0:
-            final_chunks.append(" ".join(curr_sent))
+        curr_final_chunk = process_sents(curr_sent)
+        if curr_final_chunk is not None:
+            final_chunks.append(curr_final_chunk)
 
         tables = get_tables(clean_html(html_source), html_name)
 
         return interaction_id, final_chunks, tables
 
     def extract_chunks(
-        self, batch_interaction_ids, batch_search_results, include_tables
+        self,
+        batch_interaction_ids,
+        batch_search_results,
+        include_tables,
+        extracted_entities,
     ):
         """
         Extracts chunks from given batch search results using parallel processing with Ray.
@@ -366,6 +401,7 @@ class ChunkTableExtractor:
             self._extract_chunks.remote(
                 self,
                 interaction_id=batch_interaction_ids[idx],
+                curr_entities=extracted_entities[idx],
                 html_source=html_text["page_result"],
                 html_snippet=html_text["page_snippet"],
                 html_name=html_text["page_name"],
@@ -814,6 +850,61 @@ class KGToolRAGModel:
         """
         return self.batch_size
 
+    def extract_entities(self, queries: list[str]) -> list[Optional[dict[str, str]]]:
+        system_prompt = """
+You are a helpful assistant in extracting entities of a question. Your task is to extract the main entities from a given question. Here are the rules:
+
+1. `main entities`: You need to extract the main entities from the question as a list.
+2. `time`: If the question have time condition, extract the time, else just return None.
+3. All your output **MUST** be JSON format, and can be load from `json.loads`.
+
+Here are examples:
+
+# Example 1
+Query: which movie won the oscar best visual effects in 2021?
+Output: {"main_entities": ["movie", "oscar", "visual effects"], "time": "2021"}
+
+# Example 2
+Query: on which date did sgml distribute dividends the first time?
+Output: {"main_entities": ["date", "sgml", "dividends"], "time": null}
+
+**NEVER include ANY EXPLANATION or NOTE in the output, ONLY OUTPUT JSON**
+"""
+        formatted_prompts = []
+        for query in queries:
+            user_message = (
+                f"Query: {query}\nExtract the main entities from the question: \n"
+            )
+            formatted_prompts.append(
+                self.llm.get_tokenizer().apply_chat_template(
+                    [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message},
+                    ],
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            )
+        entities_output = self.llm.generate(
+            formatted_prompts,
+            vllm.SamplingParams(
+                n=1,  # Number of output sequences to return for each prompt.
+                top_p=0.9,  # Float that controls the cumulative probability of the top tokens to consider.
+                temperature=0.05,  # Randomness of the sampling
+                skip_special_tokens=True,  # Whether to skip special tokens in the output.
+                max_tokens=200,  # Maximum number of tokens to generate per output sequence.
+            ),
+            use_tqdm=False,  # you might consider setting this to True during local development
+        )
+        output_entities = []
+        for response in entities_output:
+            try:
+                output_entities.append(json.loads(response.outputs[0].text))
+                continue
+            except:
+                output_entities.append(extract_json_objects(response.outputs[0].text))
+        return output_entities
+
     def get_tool_references(
         self, queries: list[str], query_times: list[str]
     ) -> list[list[str]]:
@@ -866,7 +957,7 @@ Remember your rules:
         function_calls_response = self.llm.generate(
             formatted_prompts,
             vllm.SamplingParams(
-                n=5,
+                n=1,
                 top_p=0.9,
                 temperature=1.0,
                 skip_special_tokens=True,
@@ -939,6 +1030,7 @@ Remember your rules:
         queries = batch["query"]
         batch_search_results = batch["search_results"]
         query_times = batch["query_time"]
+        extracted_entities = self.extract_entities(queries)
         curr_start_time = time.perf_counter()
 
         # Chunk all search results using ChunkExtractor
@@ -948,6 +1040,7 @@ Remember your rules:
                     batch_interaction_ids,
                     batch_search_results,
                     include_tables=self.include_table_in_text,
+                    extracted_entities=extracted_entities,
                 )
             )
         else:
