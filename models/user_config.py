@@ -24,7 +24,8 @@ from functools import partial
 # UserModel = BatchRAGModelWithCalculator
 # UserModel = ParagraphBatchRAGModelWithCalculatorReasoning
 
-UserModel = KGToolRAGModel
+# UserModel = KGToolRAGModel
+UserModel = KGRAGModel
 
 ##############################################
 # UserModel = partial(CustomRAGModel, model="llama3-8b-groq")
