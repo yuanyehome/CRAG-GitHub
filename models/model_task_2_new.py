@@ -98,7 +98,7 @@ def extract_json_objects(text, decoder=JSONDecoder()):
     pos = 0
     results = []
     while True:
-        match = text.find("{", pos)
+        match = text.find("[", pos)
         if match == -1:
             break
         try:
@@ -884,20 +884,24 @@ Remember your rules:
                 if curr_function_call_response == "":
                     continue
                 try:
-                    curr_function_call = json.loads(curr_function_call_response)
+                    curr_function_call_list = json.loads(curr_function_call_response)
                 except:
-                    curr_function_call = extract_json_objects(curr_function_call_response)
-                if curr_function_call:
+                    curr_function_call_list = extract_json_objects(curr_function_call_response)
+                if curr_function_call_list is None:
+                    continue
+                if type(curr_function_call_list) != list:
                     continue
                 try:
-                    function_name = curr_function_call["function_name"]
-                    function_args = curr_function_call["args"]
-                    function_func = eval(f"self.api.{function_name}")
-                    function_result = function_func(*function_args)
-                    curr_function_call["function_result"] = str(function_result)[:200]
-                    curr_function_calls.add(json.dumps(curr_function_call))
+                    for curr_function_call in curr_function_call_list:
+                        function_name = curr_function_call["function_name"]
+                        function_args = curr_function_call["args"]
+                        function_func = eval(f"self.api.{function_name}")
+                        function_result = function_func(*function_args)
+                        curr_function_call["function_result"] = str(function_result)[:200]
+                        curr_function_calls.add(json.dumps(curr_function_call))
                 except:
                     logger.warning(traceback.format_exc())
+                    logger.warning(curr_function_call_list)
             function_calls.append(list(curr_function_calls))
         return function_calls
                     
