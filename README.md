@@ -1,122 +1,44 @@
-![banner image](https://aicrowd-production.s3.eu-central-1.amazonaws.com/challenge_images/meta-kdd-cup-24/meta_kdd_cup_24_banner.jpg)
-[![Discord](https://img.shields.io/discord/565639094860775436.svg)](https://discord.gg/yWurtB2huX)
+# Meta CRAG KDD Cup 2024 Solution
+- Team: ElectricSheep
+- Team member: Ye Yuan, Jingyang Yuan, Chengwu Liu, Gongbo Sub, Siqi Li
+- Mentor: Prof. Ming Zhang
+- Final Score:
+  - Announcement: [Winners](https://discourse.aicrowd.com/t/meta-crag-challenge-2024-winners-announcement/10786)
+  - 3rd place in Task-1;
+  - Prize for 5 out of 7 questions types in Task-2;
 
-# Meta KDD Cup '24 [CRAG: Comprehensive RAG Benchmark](https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024) Starter Kit
+## Competition
+- Homepage: [Meta CRAG KDD Cup 2024](https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024)
+- Baseline code: [Baseline](https://gitlab.aicrowd.com/aicrowd/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024/meta-comphrehensive-rag-benchmark-starter-kit/)
+- See [OLD-README.md](OLD-README.md) for the old README file.
 
+## Setup Environment
+- Install the required packages by running `pip install -r requirements.txt`.
+- We use conda to manage the environment. The installation procedure is shown below:
+  ```bash
+  conda create -n rag-vllm python=3.10
+  conda activate rag-vllm
+  conda install nvidia/label/cuda-11.8.0::cuda
+  conda install pytorch=2.3.0 pytorch-cuda=11.8 -c pytorch -c nvidia
+  conda install xformers -c xformers
+  export PYTHON_VERSION=310
+  export VLLM_VERSION=0.4.2
+  pip install https://github.com/vllm-project/vllm/releases/download/v${VLLM_VERSION}/vllm-${VLLM_VERSION}+cu118-cp${PYTHON_VERSION}-cp${PYTHON_VERSION}-manylinux1_x86_64.whl --extra-index-url https://download.pytorch.org/whl/cu118
+  cd rag-challenge/meta-comphrehensive-rag-benchmark-starter-kit-new/
+  pip install -r requirements.txt
+  ```
+- The installation may be different in different devices. See our `environment.yaml` for the details of the environment.
 
-This repository is the CRAG: Comphrensive RAG Benchmark **Submission template and Starter kit**! Clone the repository to compete now!
-
-**This repository contains**:
-*  **Documentation** on how to submit your models to the leaderboard
-*  **The procedure** for best practices and information on how we evaluate your model, etc.
-*  **Starter code** for you to get started!
-
-# Table of Contents
-
-1. [Competition Overview](#-competition-overview)
-2. [Dataset](#-dataset)
-3. [Tasks](#-tasks)
-4. [Evaluation Metrics](#-evaluation-metrics)
-5. [Getting Started](#-getting-started)
-   - [How to write your own model?](#️-how-to-write-your-own-model)
-   - [How to start participating?](#-how-to-start-participating)
-      - [Setup](#setup)
-      - [How to make a submission?](#-how-to-make-a-submission)
-      - [What hardware does my code run on?](#-what-hardware-does-my-code-run-on-)
-      - [How are my model responses parsed by the evaluators?](#-how-are-my-model-responses-parsed-by-the-evaluators-)
-      - [Baselines](#baselines)
-6. [Frequently Asked Questions](#-frequently-asked-questions)
-6. [Important Links](#-important-links)
-
-
-# 📖 Competition Overview
-
-
-# 📊 Dataset
-
-Please find more details about the dataset in [docs/dataset.md](docs/dataset.md).
-
-# 👨‍💻👩‍💻 Tasks  
-
-
-## 📏 Evaluation Metrics
-
-
-Please refer to [local_evaluation.py](local_evaluation.py) for more details on how we will evaluate your submissions.
-
-# 🏁 Getting Started
-1. **Sign up** to join the competition [on the AIcrowd website](https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024).
-2. **Fork** this starter kit repository. You can use [this link](https://gitlab.aicrowd.com/aicrowd/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024/meta-comphrehensive-rag-benchmark-starter-kit/-/forks/new) to create a fork.
-3. **Clone** your forked repo and start developing your model.
-4. **Develop** your model(s) following the template in [how to write your own model](#how-to-write-your-own-model) section.
-5. [**Submit**](#-how-to-make-a-submission) your trained models to [AIcrowd Gitlab](https://gitlab.aicrowd.com) for evaluation [(full instructions below)](#-how-to-make-a-submission). The automated evaluation will evaluate the submissions on the public test set and report the metrics on the leaderboard of the competition.
-
-# ✍️ How to write your own model?
-
-Please follow the instructions in [models/README.md](models/README.md) for instructions and examples on how to write your own models for this competition.
-
-# 🚴 How to start participating?
-
-## Setup
-
-1. **Add your SSH key** to AIcrowd GitLab
-
-You can add your SSH Keys to your GitLab account by going to your profile settings [here](https://gitlab.aicrowd.com/-/profile/keys). If you do not have SSH Keys, you will first need to [generate one](https://docs.gitlab.com/ee/user/ssh.html).
-
-
-2. **Fork the repository**. You can use [this link](https://gitlab.aicrowd.com/aicrowd/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024/meta-comphrehensive-rag-benchmark-starter-kit/-/forks/new) to create a fork.
-
-3.  **Clone the repository**
-
+## Local Evaluation
+- Run `python local_evaluation.py` for debugging the environment. This command will evaluate 10 examples in the repo.
+- Run `python local_evaluation.py -h` to see all arguments.
+- The Llama3-70B-4bits-GPTQ model is downloaded from `https://huggingface.co/TechxGenus/Meta-Llama-3-70B-Instruct-GPTQ`.
+  - If you don't like to download LFS files in this repo due to some speed issues, you can download the model from the link above and clone the repo with:
     ```bash
-    git clone git@gitlab.aicrowd.com:<YOUR-AICROWD-USERNAME>/meta-comphrehensive-rag-benchmark-starter-kit.git
-    cd meta-comphrehensive-rag-benchmark-starter-kit
+    GIT_LFS_SKIP_SMUDGE=1 git clone git@gitlab.aicrowd.com:shizueyy/crag-new.git
     ```
-
-4. **Install** competition specific dependencies!
+    Then you can use `--local-large-files-path` to specify the path of the model. Here is an example:
     ```bash
-    cd meta-comphrehensive-rag-benchmark-starter-kit
-    pip install -r requirements.txt
+    python local_evaluation.py --use-public-test --log-dir "local_eval_logs_new/debug-task-1" --vllm_gpu_memory_utilization 0.5 --test-ratio 1.0 --local-large-files-path <LARGE-FILES-PATH>
     ```
-
-5. Write your own model as described in [How to write your own model](#how-to-write-your-own-model) section.
-
-6. Test your model locally using `python local_evaluation.py`.
-
-7. Accept the Challenge Rules on the main [challenge page](https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024) by clicking on the **Participate** button. Also accept the Challenge Rules on the Task specific page (link on the challenge page) that you want to submit to.
-
-8. Make a submission as described in [How to make a submission](#-how-to-make-a-submission) section.
-
-# ✍️ How to write your own model?
-
-Please follow the instructions in [models/README.md](models/README.md) for instructions and examples on how to write your own models for this competition.
-
-
-## 📮 How to make a submission?
-
-Please follow the instructions in [docs/submission.md](docs/submission.md) to make your first submission. 
-This also includes instructions on [specifying your software runtime](docs/submission.md#specifying-software-runtime-and-dependencies), [code structure](docs/submission.md#code-structure-guidelines), [submitting to different tracks](docs/submission.md#submitting-to-different-tracks).
-
-**Note**: **Remember to accept the Challenge Rules** on the challenge page, **and** the task page before making your first submission.
-
-## 💻 What hardware does my code run on ?
-You can find more details about the hardware and system configuration in [docs/hardware-and-system-config.md](docs/hardware-and-system-config.md).
-In summary, we provide you `4` x [[NVIDIA T4 GPUs](https://www.nvidia.com/en-us/data-center/tesla-t4/)].
-
-## 🏁 Baseline
-We include two baselines for demonstration purposes, and you can read more abou them in [docs/baselines.md](docs/baselines.md).
-
-# ❓ Frequently Asked Questions
-## Which track is this starter kit for ?
-This starter kit can be used to submit to any of the tracks. You can find more information in [docs/submission.md#submitting-to-different-tracks](docs/submission.md#submitting-to-different-tracks).
-
-## Where can I know more about the dataset schema ?
-The dataset schema is described in [docs/dataset.md](docs/dataset.md).
-
-**Best of Luck** :tada: :tada:
-
-# 📎 Important links
-
-- 💪 Challenge Page: https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024
-- 🗣 Discussion Forum: https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024/discussion
-- 🏆 Leaderboard: https://www.aicrowd.com/challenges/meta-comprehensive-rag-benchmark-kdd-cup-2024/leaderboards
+- There are different branches for different tasks. The `main` branch is for Task-1, and the `task-{2,3}` branch is for Task-{2,3}.

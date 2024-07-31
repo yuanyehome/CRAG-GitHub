@@ -288,7 +288,7 @@ def generate_predictions(dataset_path, participant_model, case_idxs: list[int]):
                 assert reasoning_output is None
             if reasoning_output is None:
                 assert reasoning_prompt is None
-            
+
             f.write("=" * 50 + "\n")
             f.write(f"Query:\n{query}\n")
             f.write("*" * 50 + "\n")
@@ -572,8 +572,17 @@ if __name__ == "__main__":
     from models.user_config import UserModel
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--use-public-test", action="store_true")
-    parser.add_argument("--test-ratio", type=float, default=0.2)
+    parser.add_argument(
+        "--use-public-test",
+        action="store_true",
+        help="Whether to use public test set for evaluation or use 10 examples for debugging",
+    )
+    parser.add_argument(
+        "--test-ratio",
+        type=float,
+        default=0.2,
+        help="How much of the public test set to use",
+    )
     parser.add_argument("--model_size", type=str, choices=["8B", "70B"], default="70B")
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--seed", type=int, default=42)
@@ -599,9 +608,7 @@ if __name__ == "__main__":
         default="",
     )
     parser.add_argument(
-        "--invalid_question_keys",
-        type=str,
-        default='["none", "never"]'
+        "--invalid_question_keys", type=str, default='["none", "never"]'
     )
     args = parser.parse_args()
     args.idk_attrs = json.loads(args.idk_attrs)
