@@ -32,7 +32,7 @@
 ## Local Evaluation
 - Run `python local_evaluation.py` for debugging the environment. This command will evaluate 10 examples in the repo.
 - Run `python local_evaluation.py -h` to see all arguments.
-- The Llama3-70B-4bits-GPTQ model is downloaded from `https://huggingface.co/TechxGenus/Meta-Llama-3-70B-Instruct-GPTQ`.
+- The Llama3-70B-4bits-GPTQ model is downloaded from https://huggingface.co/TechxGenus/Meta-Llama-3-70B-Instruct-GPTQ.
   - If you don't like to download LFS files in this repo due to some speed issues, you can download the model from the link above and clone the repo with:
     ```bash
     GIT_LFS_SKIP_SMUDGE=1 git clone git@gitlab.aicrowd.com:shizueyy/crag-new.git
